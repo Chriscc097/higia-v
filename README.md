@@ -1,70 +1,82 @@
-# Getting Started with Create React App
+# Sterilize Pro / higia V
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Descripción
 
-## Available Scripts
+Sterilize Pro es una herramienta básica para la esterilización y desinfección de instrumental y equipos médicos. Proporciona una solución eficiente y segura para mantener los estándares de higiene en entornos médicos.
 
-In the project directory, you can run:
+## Características
 
-### `npm start`
+1. **Control de Loncheras o Clientes**: Permite gestionar los inventarios de material para esterilizar de diferentes clientes, incluyendo instrumental y equipo biomédico. Cada cliente puede tener su propio inventario personalizado.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+2. **Control de Procesos**: Ofrece una descripción detallada de cada proceso de esterilización, incluyendo el tipo de información relevante como tiempos, temperaturas y métodos utilizados. Facilita el seguimiento y la documentación de cada proceso.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+3. **Control de Rutas de Procesos**: Gestiona y optimiza las rutas de los procesos de esterilización, asegurando que cada paso se realice en el orden correcto y de manera eficiente.
 
-### `npm test`
+4. **Control de Inventario de Equipos Biomédicos**: Permite llevar un registro detallado de los equipos biomédicos disponibles, su estado y sus usos. Facilita la gestión del mantenimiento y la disponibilidad de los equipos.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+5. **Control de Cargas y Ciclos de Esterilización**: Monitorea y registra las cargas y los ciclos de esterilización, incluyendo los controles químicos y microbiológicos necesarios para asegurar la efectividad del proceso y la seguridad del instrumental.
 
-### `npm run build`
+6. **Control de Usuarios**: Administra los usuarios que tienen acceso a la herramienta, asignando roles y permisos específicos para cada uno. Permite la creación, edición y eliminación de usuarios, así como la gestión de sus credenciales de acceso.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+7. **Control de Archivos de las Cargas**: Gestiona y almacena los archivos relacionados con las cargas de esterilización, incluyendo reportes, certificados y registros de control. Facilita el acceso y la consulta de estos documentos para auditorías y verificaciones.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Instalación
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Para instalar Sterilize Pro, sigue estos pasos:
 
-### `npm run eject`
+1. Clona el repositorio:
+    ```bash
+    git clone https://github.com/tu-usuario/sterilize-pro.git
+    ```
+2. Navega al directorio del proyecto:
+    ```bash
+    cd sterilize-pro
+    ```
+3. Instala las dependencias:
+    ```bash
+    npm install
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+    ```
+4. Configura Firebase con los siguientes servicios: Firestore, Storage, Hosting, Authentication, y Functions. Asegúrate de seguir la documentación oficial de Firebase para cada uno de estos servicios.
+    ```bash
+    npm install -g firebase-tools
+    npm install firebase
+    ```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+5. Crea un archivo `keys.js` en la carpeta `config` con la configuración de Firebase. Puedes usar `keys-example.js` como referencia. El archivo debe tener la siguiente estructura:
+    ```javascript
+    module.exports = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID",
+        measurementId: "YOUR_MEASUREMENT_ID"
+    };
+    ```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Uso
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Para iniciar la aplicación, ejecuta el siguiente comando:
+```bash
+npm start
+```
 
-## Learn More
+## Contribuir
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Si deseas contribuir a Sterilize Pro, por favor sigue estos pasos:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+1. Haz un fork del repositorio.
+2. Crea una nueva rama (`git checkout -b feature/nueva-funcionalidad`).
+3. Realiza tus cambios y haz commit (`git commit -am 'Añadir nueva funcionalidad'`).
+4. Sube tus cambios (`git push origin feature/nueva-funcionalidad`).
+5. Abre un Pull Request.
 
-### Code Splitting
+## Licencia
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Este proyecto está bajo la licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
 
-### Analyzing the Bundle Size
+## Contacto
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Para más información, puedes contactarme en [christianrcardenas@icloud.com](mailto:christianrcardenas@icloud.com).
