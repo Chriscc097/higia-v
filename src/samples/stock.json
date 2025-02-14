@@ -1,0 +1,17 @@
+{
+    "id": "XXXX",
+    "packageId": "XXXX",
+    "name": "Lorem Impsum",
+    "content": "Lorem Impsum ....",
+    "uses": 30,
+    "dentistId": "1",
+    "status": "Almacén/Consultorio/Baja",
+    "entry": {
+        "uid": "XXXX",
+        "timestamp": "timestamp"
+    },
+    "exit": {
+        "uid": "XXXX",
+        "timestamp": "timestamp"
+    }
+}

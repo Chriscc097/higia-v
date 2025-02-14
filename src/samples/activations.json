@@ -1,0 +1,15 @@
+{
+    "id": "XXXX",
+    "life": 28,
+    "stockId": "XXXXX",
+    "lot": "lorem impsum",
+    "exp": "timestamp",
+    "entry": {
+        "timestamp": "timestamp",
+        "uid": ""
+    },
+    "egress": {
+        "timestamp": "timestamp",
+        "uid": ""
+    }
+}

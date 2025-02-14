@@ -1,0 +1,19 @@
+{
+    "id": "XXXXX",
+    "loadId": "XXXXX",
+    "startedAt": "timestamp",
+    "endAt": "timestamp",
+    "uid": "XXXXX",
+    "method": "A/B/C",
+    "result": "A/B/C",
+    "stockId" : "XXXXX", 
+    "lot" : "XXXXX",
+    "exp" : "timestamp",
+    "interpretation": "Lorem Impsum Dolor ....",
+    "recomendations": "Lorem Impsum Dolor ....",
+    "attachments": [
+        "XXXX",
+        "XXXXX",
+        "xxx"
+    ]
+}

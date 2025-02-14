@@ -1,0 +1,16 @@
+{
+    "id": "XXXXX",
+    "name": "Lorem Impsum",
+    "desc": "Lorem Impsum",
+    "requirements": {
+        "activation": true,
+        "temp": true,
+        "psi": true,
+        "min": true,
+        "equipmentsIds": [
+            "a1",
+            "b2",
+            "c3"
+        ]
+    }
+}

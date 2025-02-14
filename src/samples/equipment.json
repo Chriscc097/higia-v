@@ -1,0 +1,21 @@
+{
+    "id": "XXX",
+    "name": "Lorem Impsum",
+    "serial": "XXX",
+    "uses": 30,
+    "status" : "active",
+    "entry": {
+        "user": {
+            "uid": "XXXX",
+            "username": "lorempsum"
+        },
+        "date": "timestamp"
+    },
+    "exit": {
+        "user": {
+            "uid": "XXXX",
+            "username": "lorempsum"
+        },
+        "date": "timestamp"
+    }
+}

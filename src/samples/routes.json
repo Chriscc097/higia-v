@@ -1,0 +1,11 @@
+{
+    "id": "XXXX",
+    "name": "Lorem Impsum",
+    "desc": "Lorem Impsum",
+    "process": [
+        {
+            "index": 0,
+            "id": "XXXXX"
+        }
+    ]
+}
