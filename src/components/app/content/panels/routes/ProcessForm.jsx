@@ -53,14 +53,7 @@ const ProcessForm = ({ process, onClose }) => {
       toast.warn("Al menos un requisito debe ser verdadero");
       return;
     }
-
-    if (
-      formData.requirements.equipments &&
-      formData.requirements.equipmentsIds.length === 0
-    ) {
-      toast.warn("Debe haber al menos un equipo seleccionado");
-      return;
-    }
+    
     await Firestore.create("process", formData);
     onClose();
   };
