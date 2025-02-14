@@ -1,8 +1,12 @@
-# Sterilize Pro / higia V
+# Higia V
+
+## Estado del Proyecto
+
+Este proyecto está en desarrollo. Algunas características pueden no estar completamente implementadas o pueden cambiar en futuras versiones.
 
 ## Descripción
 
-Sterilize Pro es una herramienta básica para la esterilización y desinfección de instrumental y equipos médicos. Proporciona una solución eficiente y segura para mantener los estándares de higiene en entornos médicos.
+Higia V es una herramienta básica para la esterilización y desinfección de instrumental y equipos médicos. Proporciona una solución eficiente y segura para mantener los estándares de higiene en entornos médicos.
 
 ## Características
 
@@ -25,40 +29,46 @@ Sterilize Pro es una herramienta básica para la esterilización y desinfección
 Para instalar Sterilize Pro, sigue estos pasos:
 
 1. Clona el repositorio:
-    ```bash
-    git clone https://github.com/tu-usuario/sterilize-pro.git
-    ```
+   ```bash
+   git clone https://github.com/tu-usuario/sterilize-pro.git
+   ```
 2. Navega al directorio del proyecto:
-    ```bash
-    cd sterilize-pro
-    ```
+   ```bash
+   cd sterilize-pro
+   ```
 3. Instala las dependencias:
-    ```bash
-    npm install
 
-    ```
+   ```bash
+   npm install
+
+   ```
+
 4. Configura Firebase con los siguientes servicios: Firestore, Storage, Hosting, Authentication, y Functions. Asegúrate de seguir la documentación oficial de Firebase para cada uno de estos servicios.
-    ```bash
-    npm install -g firebase-tools
-    npm install firebase
-    ```
+
+   ```bash
+   npm install -g firebase-tools
+   npm install firebase
+   ```
 
 5. Crea un archivo `keys.js` en la carpeta `config` con la configuración de Firebase. Puedes usar `keys-example.js` como referencia. El archivo debe tener la siguiente estructura:
-    ```javascript
-    module.exports = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT_ID.appspot.com",
-        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-        appId: "YOUR_APP_ID",
-        measurementId: "YOUR_MEASUREMENT_ID"
-    };
-    ```
+   ```javascript
+   const firebaseConfig = {
+        apiKey: "<YOUR_API_KEY>",
+        authDomain: "<YOUR_AUTH_DOMAIN>",
+        projectId: "<YOUR_PROJECT_ID>",
+        storageBucket: "<STORAGE_BUCKET>",
+        messagingSenderId: "<YOUR_MESSAGING_SENDER_ID>",
+        appId: "<YOUR_APP_ID>",
+        measurementId: "<YOUR_MEASUREMENT_ID>"
+   };
+
+    export { firebaseConfig };
+```
 
 ## Uso
 
 Para iniciar la aplicación, ejecuta el siguiente comando:
+
 ```bash
 npm start
 ```
