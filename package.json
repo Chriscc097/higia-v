@@ -3,16 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "bwip-js": "^4.6.0",
     "cra-template": "1.2.0",
     "firebase": "^11.2.0",
+    "locale": "^0.1.0",
+    "lucide-react": "^0.511.0",
     "luxon": "^3.5.0",
+    "pdfmake": "^0.2.20",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-scripts": "^5.0.1",
     "react-select": "^5.10.0",
     "react-toastify": "^11.0.3",
     "react-tools": "^0.13.3",
-    "zustand": "^5.0.3"
+    "zustand": "^5.0.5"
   },
   "scripts": {
     "start": "react-scripts start",

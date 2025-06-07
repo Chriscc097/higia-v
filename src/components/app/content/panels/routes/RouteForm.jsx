@@ -1,11 +1,13 @@
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
-import { default as React, useEffect, useState } from "react";
+import { CirclePlus, Loader, Save, Trash2, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import Select from "react-select";
 import { toast } from "react-toastify";
-import Firestore, { db } from "../../../../../controllers/Firebase/Firestore";
+import FirebaseDataBase, { db } from "../../../../../firebase/FirebaseDatabase";
 import { useUserStore } from "./../../../../../context/userStore";
 import ProcessForm from "./ProcessForm";
 import "./RouteForm.css";
+
 
 const RouteForm = ({ route, onClose }) => {
   const [routeData, setRouteData] = useState({ ...route });
@@ -28,6 +30,9 @@ const RouteForm = ({ route, onClose }) => {
   const handleAddProcess = (e) => {
     const processId = e.value;
     const routeProcess = routeData.process || [];
+    if(routeProcess.length === 0){
+      routeProcess.push("mArvk9CJCrs94Eu19Tcc");
+    }
     if (routeProcess.some((processItem) => processItem.id === processId)) {
       toast.warn("El proceso ya ha sido agregado");
       return;
@@ -54,7 +59,7 @@ const RouteForm = ({ route, onClose }) => {
 
     setLoading(true);
     if (route?.id) {
-      Firestore.update("routes", routeData)
+      FirebaseDataBase.update("routes", routeData)
         .then(() => {
           toast.update(idtoast, {
             render: "Ruta actualizada",
@@ -75,7 +80,7 @@ const RouteForm = ({ route, onClose }) => {
         })
         .finally(() => setLoading(false));
     } else {
-      Firestore.create("routes", routeData)
+      FirebaseDataBase.save("routes", routeData)
         .then(() => {
           toast.update(idtoast, {
             render: "Ruta creada correctamente",
@@ -102,6 +107,9 @@ const RouteForm = ({ route, onClose }) => {
     const routeProcess = routeData.process;
     const index = routeProcess.findIndex((pr) => pr.id === processItem);
     routeProcess.splice(index, 1);
+    if (routeProcess.length === 0) {
+      routeProcess.push("mArvk9CJCrs94Eu19Tcc");
+    }
     setRouteData((prevRouteData) => ({
       ...prevRouteData,
       process: routeProcess,
@@ -115,10 +123,10 @@ const RouteForm = ({ route, onClose }) => {
           <h3>{route?.id ? "Editar Ruta" : "Crea una Ruta"}</h3>
           <div className="buttonIconSection">
             <div className="buttonIcon save" onClick={() => saveRoute()}>
-              <img src="./save.png" />
+              <Save size={20} color="white" />
             </div>
             <div className="buttonIcon close" onClick={() => onClose()}>
-              <img src="./cross_white.png" />
+              <X size={15} color="white"/>
             </div>
           </div>
         </div>
@@ -161,7 +169,7 @@ const RouteForm = ({ route, onClose }) => {
               className="buttonIcon save"
               onClick={() => setProcessFormVisible(true)}
             >
-              <img src="./plus_white.png" />
+              <CirclePlus size={20} color="white" />
             </div>
             <div className="formItem long">
               <h4>Usuario</h4>
@@ -200,7 +208,7 @@ const RouteForm = ({ route, onClose }) => {
                                 className="buttonIcon delete"
                                 onClick={() => handleremoveProcess(processItem)}
                               >
-                                <img src="./trash_white.png" />
+                                <Trash2 size={20} color="white" />
                               </div>
                             </span>
                           </td>
@@ -209,7 +217,7 @@ const RouteForm = ({ route, onClose }) => {
                     })}
                 </tbody>
               </table>
-              {loading && <div className="loading">Cargando...</div>}
+              {loading && <div className="loading"><Loader size={20} color="#292F36" /><p>Cargando</p></div>}
             </div>
           </div>
         </div>

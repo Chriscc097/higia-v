@@ -5,8 +5,10 @@ import {
   query,
   startAfter,
 } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
-import { db } from "../../../../../controllers/Firebase/Firestore";
+import { CirclePlus, Loader } from "lucide-react";
+import { useEffect, useState } from "react";
+import { db } from "../../../../../firebase/FirebaseDatabase";
+import Process from "./Process";
 import RouteForm from "./RouteForm";
 import "./Routes.css";
 
@@ -16,6 +18,7 @@ const Routes = () => {
   const [loading, setLoading] = useState(false); // Estado de carga
   const [hasMore, setHasMore] = useState(true); // Para evitar más cargas si ya no hay datos
   const [selectedRoute, setSelectedRoute] = useState(null);
+  const [processVisible, setProcessVisible] = useState(false);
 
   // Función para cargar los datos iniciales
   const loadInitialData = async () => {
@@ -80,8 +83,14 @@ const Routes = () => {
         <h2 className="title">Rutas</h2>
         <div className="leftHeader">
           <div className="buttons">
+            <div
+              className="imgbutton secondary"
+              onClick={() => setProcessVisible(true)}
+            >
+              <p>Procesos</p>
+            </div>
             <div className="imgbutton" onClick={() => setSelectedRoute({})}>
-              <img src="/add_white.png" alt="Nueva Ruta" />
+              <CirclePlus size={20} color="white" />
               <p>Nueva Ruta</p>
             </div>
           </div>
@@ -112,7 +121,7 @@ const Routes = () => {
               })}
             </tbody>
           </table>
-          {loading && <div className="loading">Cargando...</div>}
+          {loading && <div className="loading"><Loader size={20} color="#292F36" /><p>Cargando</p></div>}
         </div>
       </div>
       {selectedRoute && (
@@ -121,6 +130,7 @@ const Routes = () => {
           route={selectedRoute}
         />
       )}
+      {processVisible && <Process onClose={() => setProcessVisible(false)} />}
     </div>
   );
 };

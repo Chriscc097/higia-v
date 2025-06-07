@@ -1,16 +1,18 @@
 import { onAuthStateChanged } from "firebase/auth";
-import React, { useEffect } from "react";
+import { Loader } from "lucide-react";
+import { useEffect } from "react";
 import { toast } from "react-toastify";
 import "./App.css";
 import Content from "./components/app/content/main/Content";
 import Menu from "./components/app/menu/Menu";
 import LogIn from "./components/auth/LogIn";
 import Notification from "./components/utils/Notification";
+import useClientStore from "./context/clientStore";
 import { useUserStore } from "./context/userStore";
-import { auth } from "./controllers/Firebase/FirebaseConfig";
-import Firestore from "./controllers/Firebase/Firestore";
+import { auth } from "./firebase/FirebaseAuth";
+import FirebaseDataBase from "./firebase/FirebaseDatabase";
 
-const App = () => {
+export default function App() {
   const { currentUser, isLoading, fetchUserInfo } = useUserStore();
 
   useEffect(() => {
@@ -20,10 +22,10 @@ const App = () => {
         return;
       }
 
-      let userProfile = await Firestore.get("profiles", user.uid);
+      let userProfile = await FirebaseDataBase.get("profiles", user.uid);
 
       if (!userProfile) {
-        userProfile = await Firestore.create("profiles", {
+        userProfile = await FirebaseDataBase.save("profiles", {
           id: user.uid,
           email: user.email,
           username: user.email,
@@ -45,10 +47,16 @@ const App = () => {
     };
   }, [fetchUserInfo]);
 
+  const loadClients = useClientStore((state) => state.loadClients);
+
+  useEffect(() => {
+    loadClients(); // Carga la lista de clientes al iniciar la app
+  }, [loadClients]);
+
   if (isLoading) {
     return (
       <div className="loading">
-        <img src="./assets/loading.gif" />
+        <Loader size={20} color="#292F36" />
         <p>Cargando</p>
       </div>
     );
@@ -67,6 +75,4 @@ const App = () => {
       <Notification />
     </div>
   );
-}
-
-export default App;
+};

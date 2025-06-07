@@ -6,10 +6,22 @@ import {
   query,
   startAfter,
 } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
-import { db } from "../../../../../controllers/Firebase/Firestore";
-import { dateToYYYYMMDD } from "../../../../../utils/dates-functions";
-import LoadForm from "./LoadForm";
+import {
+  CircleArrowOutUpRight,
+  Loader,
+  PlusCircle,
+  ShieldCheck,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { db } from "../../../../../firebase/FirebaseDatabase";
+import {
+  dateToYYYYMMDD,
+  diffDays,
+  getExpColor,
+} from "../../../../../utils/dates-functions";
+import Activation from "../activations/Activation";
+import ExitForm from "./exit/ExitForm";
+import LoadForm from "./form/LoadForm";
 import "./Loads.css";
 
 const Loads = () => {
@@ -18,6 +30,8 @@ const Loads = () => {
   const [loading, setLoading] = useState(false); // Estado de carga
   const [hasMore, setHasMore] = useState(true); // Para evitar más cargas si ya no hay datos
   const [selectedLoad, setSelectedLoad] = useState(null); // Estado para la carga seleccionada
+  const [activationsVisible, setActivationsVisible] = useState(false);
+  const [exitFormVisible, setExitFormVisible] = useState(false);
 
   // Función para cargar los datos iniciales
   const loadInitialData = async () => {
@@ -25,7 +39,7 @@ const Loads = () => {
     try {
       const initialQuery = query(
         collection(db, "loads"),
-        orderBy("startedAt", "desc"),
+        orderBy("date", "desc"),
         limit(20)
       );
       const snapshot = await getDocs(initialQuery);
@@ -46,7 +60,7 @@ const Loads = () => {
     try {
       const nextQuery = query(
         collection(db, "loads"),
-        orderBy("startedAt", "desc"),
+        orderBy("date", "desc"),
         startAfter(lastDoc),
         limit(10)
       );
@@ -87,8 +101,22 @@ const Loads = () => {
         <h2 className="title">Cargas</h2>
         <div className="leftHeader">
           <div className="buttons">
+            <div
+              className="imgbutton terciary"
+              onClick={() => setExitFormVisible(true)}
+            >
+              <CircleArrowOutUpRight color="white" size={20} />
+              <p>Salidas</p>
+            </div>
+            <div
+              className="imgbutton secondary"
+              onClick={() => setActivationsVisible(true)}
+            >
+              <ShieldCheck color="white" size={20} />
+              <p>Activaciones</p>
+            </div>
             <div className="imgbutton" onClick={() => setSelectedLoad({})}>
-              <img src="/add_white.png" alt="Nueva Carga" />
+              <PlusCircle color="white" size={20} />
               <p>Nueva carga</p>
             </div>
           </div>
@@ -104,29 +132,24 @@ const Loads = () => {
                 <th>Carga</th>
                 <th>Responsable</th>
                 <th>Ruta</th>
-                <th>Exp</th>
+                <th>Vencimiento</th>
                 <th>Paquetes</th>
               </tr>
             </thead>
             <tbody>
               {loads.map((load, index) => {
-                const lotNumber = load?.lot
-                  ? `${load.lot}#${load.number || ""}`
-                  : "N/A";
-                const expDate = load.exp?.toDate
-                  ? dateToYYYYMMDD(load.exp.toDate())
-                  : "Sin fecha";
-                const totalPackages = load.packages?.length || 0;
-                const remainingPackages = load.packages
-                  ? load.packages.filter((pkg) => !pkg.exited).length
-                  : 0;
-
+                const lotNumber = load?.id;
+                const totalPackages = load.cycles.total;
+                const remainingPackages = load.cycles.remaining;
                 return (
-                  <tr key={load.id || index} onClick={() => setSelectedLoad(load)}>
+                  <tr
+                    key={load.id || index}
+                    onClick={() => setSelectedLoad(load)}
+                  >
                     <td>
                       <span
                         className={
-                          load.status === "En proceso"
+                          load.status === "En Curso"
                             ? "status-badge active"
                             : load.status === "Terminada"
                             ? "status-badge ended"
@@ -137,9 +160,21 @@ const Loads = () => {
                       </span>
                     </td>
                     <td>{lotNumber}</td>
-                    <td>{load?.user?.name || "Sin responsable"}</td>
-                    <td>{load?.route?.name || "Sin Ruta"}</td>
-                    <td>{expDate}</td>
+                    <td>{load?.user?.username}</td>
+                    <td>{load?.route?.name}</td>
+                    <td>
+                      <div className="expLabel">
+                        {dateToYYYYMMDD(load.exp.toDate())}
+                        <span
+                          className={
+                            "expColor " +
+                            getExpColor(diffDays(load.exp.toDate()))
+                          }
+                        >
+                          {diffDays(load.exp.toDate())}
+                        </span>
+                      </div>
+                    </td>
                     <td>
                       {remainingPackages}/{totalPackages}
                     </td>
@@ -148,9 +183,22 @@ const Loads = () => {
               })}
             </tbody>
           </table>
-          {loading && <div className="loading">Cargando...</div>}
+          {loading && (
+            <div className="loading">
+              <Loader size={20} color="#292F36" />
+              <p>Cargando</p>
+            </div>
+          )}
         </div>
-        {selectedLoad && (<LoadForm onClose={() => setSelectedLoad(null)} load={selectedLoad} />)}
+        {selectedLoad && (
+          <LoadForm onClose={() => setSelectedLoad(null)} load={selectedLoad} />
+        )}
+        {activationsVisible && (
+          <Activation onClose={() => setActivationsVisible(false)} />
+        )}
+        {exitFormVisible && (
+          <ExitForm onClose={() => setExitFormVisible(false)} />
+        )}
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import { X } from "lucide-react";
+import { useState } from "react";
 import { toast } from "react-toastify";
-import Firestore from "../../../../../controllers/Firebase/Firestore";
+import FirebaseDataBase from "../../../../../firebase/FirebaseDatabase";
 import ToggleButton from "../../../../utils/ToggleButton";
 import "./ProcessForm.css";
 
@@ -53,10 +54,20 @@ const ProcessForm = ({ process, onClose }) => {
       toast.warn("Al menos un requisito debe ser verdadero");
       return;
     }
-    
-    await Firestore.create("process", formData);
+
+    await FirebaseDataBase.save("process", formData);
     onClose();
   };
+
+  const items = [
+    { label: "Temperatura °C", name: "temp" },
+    { label: "Presión PSI", name: "psi" },
+    { label: "Insumos", name: "supplies" },
+    { label: "Tiempo min", name: "min" },
+    { label: "Activación", name: "act" },
+    { label: "Equipos", name: "equipments" },
+    { label: "Adicionales", name: "others" },
+  ];
 
   return (
     <div className="formContainer">
@@ -68,11 +79,13 @@ const ProcessForm = ({ process, onClose }) => {
               placeholder="Nombre"
               type="text"
               name="name"
+              disabled={formData.name === "Recepción"}
               onChange={handleChange}
               value={formData.name}
             />
             <input
               type="text"
+              disabled={formData.name === "Recepción"}
               name="content"
               placeholder="Descripción"
               onChange={handleChange}
@@ -80,53 +93,28 @@ const ProcessForm = ({ process, onClose }) => {
             />
           </div>
           <h5>Requerimientos</h5>
-          <div className="formRow">
-            <div className="formColumn">
-              <ToggleButton
-                label="Temperatura °C"
-                value={formData.requirements.temp}
-                onToggle={(value) =>
-                  handleRequirements({ name: "temp", value })
-                }
-              />
-              <ToggleButton
-                label="Presión PSI"
-                value={formData.requirements.psi}
-                onToggle={(value) => handleRequirements({ name: "psi", value })}
-              />
-              <ToggleButton
-                label="Insumos"
-                value={formData.requirements.supplies}
-                onToggle={(value) =>
-                  handleRequirements({ name: "supplies", value })
-                }
-              />
-            </div>
-            <div className="formColumn">
-              <ToggleButton
-                label="Tiempo min"
-                value={formData.requirements.min}
-                onToggle={(value) => handleRequirements({ name: "min", value })}
-              />
-              <ToggleButton
-                label="Activación"
-                value={formData.requirements.act}
-                onToggle={(value) => handleRequirements({ name: "act", value })}
-              />
-              <ToggleButton
-                label="Equipos"
-                value={formData.requirements.equipments}
-                onToggle={(value) =>
-                  handleRequirements({ name: "equipments", value })
-                }
-              />
-            </div>
+          <div className="formGrid">
+            {items.map((item, index) => {
+              return (
+                <ToggleButton
+                  key={index}
+                  disabled={formData.name === "Recepción"}
+                  label={item.label}
+                  value={formData.requirements[item.name]}
+                  onToggle={(value) =>
+                    handleRequirements({ name: item.name, value })
+                  }
+                />
+              );
+            })}
           </div>
-          <button type="submit">{formData?.id ? "Guardar" : "Crear"}</button>
+          {formData.name !== "Recepción" && (
+            <button type="submit">{formData?.id ? "Guardar" : "Crear"}</button>
+          )}
         </form>
         <div className="closeButtonColumn">
           <div className="buttonIcon close" onClick={() => onClose()}>
-            <img src="./cross_white.png" alt="close" />
+            <X size={15} color="white" />
           </div>
         </div>
       </div>

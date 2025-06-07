@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import { X } from "lucide-react";
+import { useState } from "react";
 import { toast } from "react-toastify";
-import Firestore from "../../../../../controllers/Firebase/Firestore";
+import FirebaseDataBase from "../../../../../firebase/FirebaseDatabase";
 import "./PackageForm.css";
 
 const PackageForm = ({ onClose }) => {
@@ -26,7 +27,7 @@ const PackageForm = ({ onClose }) => {
       toast.warn("Todos los campos son obligatorios");
       return;
     }
-    Firestore.create("packages", formData);
+    FirebaseDataBase.save("packages", formData);
     onClose();
   };
 
@@ -63,7 +64,7 @@ const PackageForm = ({ onClose }) => {
         </form>
         <div className="closeButtonColumn">
           <div className="buttonIcon close" onClick={() => onClose()}>
-            <img src="./cross_white.png" alt="close" />
+            <X size={15} color="white"/>
           </div>
         </div>
       </div>

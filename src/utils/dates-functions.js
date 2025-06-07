@@ -1,6 +1,5 @@
 const { DateTime } = require("luxon");
 
-
 function format(inputDate) {
   const date = new Date(inputDate.seconds * 1000);
   const now = new Date();
@@ -89,10 +88,25 @@ function getAnniversary(originalDate) {
 function dateToYYYYMMDD(fecha) {
   const date = new Date(fecha);
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0"); // Los meses en JavaScript son 0-indexados
+  const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   const formated = year + "-" + month + "-" + day;
   return formated;
+}
+
+export function dateToDDMMYYYY(fecha) {
+  const date = new Date(fecha);
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0"); 
+  const day = (date.getDate()).toString().padStart(2, "0");
+  return `${day}/${month}/${year}`;
+}
+
+export function parseToGMTMinus5(value) {
+  // Si el string no tiene 'Z' ni offset, se asume local, así que lo forzamos a UTC
+  const utcDate = new Date(value + 'Z');
+  // Restamos 5 horas para GMT-5
+  return new Date(utcDate.getTime() - 5 * 60 * 60 * 1000);
 }
 
 function stringDateHourToDate(dateString, timeString) {
@@ -189,28 +203,17 @@ function addDaysToDate(inputDate, days) {
 }
 
 function dateToLongString(fecha) {
-  if (fecha === undefined) {
-    return undefined;
-  }
+  if (!fecha) return;
   let hora = fecha.getHours();
   let ampm = "AM";
   if (hora > 12) {
     hora = hora - 12;
     ampm = "PM";
   }
-  let horaString = hora.toString();
-  if (hora < 10) {
-    horaString = "0" + hora;
-  }
-
+  const horaString = hora.toString().padStart(2, "0");
   let aLas = " a las ";
-  if (horaString === "1") {
-    aLas = " a la ";
-  }
-  let minutoString = fecha.getMinutes();
-  if (fecha.getMinutes() < 10) {
-    minutoString = "0" + fecha.getMinutes().toString();
-  }
+  if (horaString === "1") aLas = " a la ";
+  const minutoString = fecha.getMinutes().toString().padStart(2, "0");
   return nombresDias[fecha.getDay()] + " " + fecha.getDate() + " de " + nombresMeses[fecha.getMonth()] + " del " + fecha.getFullYear() + aLas + horaString + ":" + minutoString + " " + ampm;
 }
 
@@ -369,6 +372,38 @@ function isWorkingHours(datetime) {
   );
 }
 
-export { addTimeToDate, dateIsBefore, dateToLongString, dateToUTC, dateToYYYYMMDD, format, formatDate, getAge, getAnniversary, getHolidaysByYearInterval, getWeekDay, isBusinessDay, isWorkingHours, lastBusinessDay, nextBusinessDay, stringDateHourToDate, stringToDate };
+function getDayOfYear(date) {
+  const start = new Date(date.getFullYear(), 0, 0);
+  const diff = date - start;
+  const oneDay = 1000 * 60 * 60 * 24;
+  return Math.floor(diff / oneDay);
+}
+
+function diffDays(date1, date2 = new Date()) {
+  const diffTime = Math.abs(date1 - date2);
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+}
+
+function getExpColor(days) {
+  if (days >= 30) {
+    return "green";
+  }
+  if (days >= 1) {
+    return "yellow";
+  }
+  return "red";
+}
+
+function formatDateHour(date) {
+  if(!date) return;
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  const hour = date.getHours().toString().padStart(2, "0");
+  const minute = date.getMinutes().toString().padStart(2, "0");
+  return `${year}-${month}-${day} ${hour}:${minute}`;
+}
+
+export { addTimeToDate, dateIsBefore, dateToLongString, dateToUTC, dateToYYYYMMDD, diffDays, format, formatDate, formatDateHour, getAge, getAnniversary, getDayOfYear, getExpColor, getHolidaysByYearInterval, getWeekDay, isBusinessDay, isWorkingHours, lastBusinessDay, nextBusinessDay, stringDateHourToDate, stringToDate };
 
 

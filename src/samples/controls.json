@@ -1,8 +1,8 @@
 {
     "id": "XXXXX",
     "loadId": "XXXXX",
-    "startedAt": "timestamp",
-    "endAt": "timestamp",
+    "startedDate": "timestamp",
+    "endDate": "timestamp",
     "uid": "XXXXX",
     "method": "A/B/C",
     "result": "A/B/C",

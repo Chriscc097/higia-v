@@ -1,0 +1,29 @@
+.activation {
+  background-color: white;
+  flex: 1;
+  max-width: 80%;
+  height: 80%;
+  margin: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  border-radius: 5px;
+
+  .header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .leftHeader {
+      margin-left: auto;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+    h2 {
+      margin-top: 10px;
+    }
+  }
+}

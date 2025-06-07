@@ -1,6 +1,6 @@
 import { signOut } from "firebase/auth";
 import { create } from "zustand";
-import { auth } from "../controllers/Firebase/FirebaseConfig";
+import { auth } from "../firebase/FirebaseAuth";
 
 export const useUserStore = create((set) => ({
   currentUser: null,

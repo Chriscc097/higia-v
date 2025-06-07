@@ -6,8 +6,9 @@ import {
   query,
   startAfter,
 } from "firebase/firestore";
-import React, { useEffect, useRef, useState } from "react";
-import { db } from "../../../../../controllers/Firebase/Firestore";
+import { CirclePlus } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { db } from "../../../../../firebase/FirebaseDatabase";
 import EquipmentForm from "./EquipmentForm";
 import "./Equipments.css";
 
@@ -113,7 +114,7 @@ const Equipments = () => {
         <div className="leftHeader">
           <div className="buttons">
             <div className="imgbutton" onClick={handleNew}>
-              <img src="/add_white.png" alt="Nuevo Equipo" />
+              <CirclePlus size={20} color="white" />
               <p>Nuevo Equipo</p>
             </div>
           </div>

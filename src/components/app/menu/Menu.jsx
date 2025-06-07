@@ -1,7 +1,7 @@
 import { signOut } from "firebase/auth";
-import React from "react";
+import { CircleCheck, CircleUserRound, LogOut, Package2, Route, Settings, Wrench } from "lucide-react";
 import { usePanelStore } from "../../../context/panelStore";
-import { auth } from "./../../../controllers/Firebase/FirebaseConfig";
+import { auth } from "./../../../firebase/FirebaseAuth";
 import "./Menu.css";
 
 const Menu = () => {
@@ -19,24 +19,24 @@ const Menu = () => {
 
       <div className="menuOptions">
         <div className="menuOption" onClick={() => changePanel("loads")}>
-          <img src="/check.png" alt="Cargas" />
+          <CircleCheck color="#292F36" size={20}/>
           <p>Cargas</p>
         </div>
         <div className="menuOption" onClick={() => changePanel("routes")}>
-          <img src="./routes.png" alt="Rutas" />
+          <Route color="#292F36" size={20}/>
           <p>Rutas</p>
         </div>
         <div className="menuOption" onClick={() => changePanel("stock")}>
-          <img src="/instrumentos.png" alt="Inventario" />
-          <p>Inventario</p>
+           <Package2 color="#292F36" size={20}/>
+          <p>Paquetes</p>
         </div>
         <div className="menuOption" onClick={() => changePanel("equipments")}>
-          <img src="/autoclave.png" alt="Equipos" />
+           <Wrench color="#292F36" size={20}/>
           <p>Equipos</p>
         </div>
         <div className="menuOption" onClick={() => changePanel("client")}>
-          <img src="./contact.png" alt="Loncheras" />
-          <p>Loncheras</p>
+          <CircleUserRound color="#292F36" size={20}/>
+          <p>Profesionales</p>
         </div>
       </div>
 
@@ -45,11 +45,11 @@ const Menu = () => {
           className="menuOption config"
           onClick={() => changePanel("config")}
         >
-          <img src="" alt="" />
+          <Settings color="#292F36" size={20}/>
           <p>Configuración</p>
         </div>
         <div className="menuOption logOut" onClick={() => handleLogout()}>
-          <img src="/logout.png" alt="Cerrar sesión" />
+           <LogOut color="#292F36" size={20}/>
           <p>Cerrar Sesión</p>
         </div>
       </div>

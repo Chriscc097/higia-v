@@ -1,10 +1,11 @@
 import {
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
 } from "firebase/auth";
-import React, { useState } from "react";
+import { CircleCheckBig } from "lucide-react";
+import { useState } from "react";
 import { toast } from "react-toastify";
-import { auth } from "../../controllers/Firebase/FirebaseConfig";
+import { auth } from "../../firebase/FirebaseAuth";
 import "./LogIn.css";
 
 const LogIn = () => {
@@ -90,7 +91,7 @@ const LogIn = () => {
   return (
     <div className="loginContainer">
       <div className="loginframe">
-        <img className="loginIcon" src="./autoclave.png" alt="Higia Logo" />
+        <CircleCheckBig size={30} color="#4ECDC4" />
         <h1>Higia V</h1>
         <form
           className="loginForm"

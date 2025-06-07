@@ -1,69 +1,59 @@
 {
     "id": "XXXX",
-    "status": "En proceso / Terminada / Cancelada",
-    "startedAt": "timestamp",
+    "status": "Sin Iniciar / En Curso / Terminada / Cancelada",
+    "date": "timestamp",
     "lot": "XXXX",
-    "number" : 1,
+    "number": 1,
     "exp": "timestamp",
-    "comments": "Lorem Impsum Dolor .....",
     "user": {
         "uid": "XXXXXx",
         "name": "Jhon doe"
     },
-    "packages": [
-        {
-            "id": "XXXXX",
-            "number": 1,
-            "exited": true,
-            "name" : "Básico de Operatoria"
-        },
-        {
-            "id": "XXXXX",
-            "number": 2,
-            "exited": false,
-            "name" : "Básico de Odontología"
-        }
-    ],
-    "process": {
-        "1": {
-            "id": "XXXXXX",
-            "name": "Lorem Impsum",
-            "min": 2,
-            "temp": 120,
-            "psi": 80,
-            "timestamp": "timestamp",
-            "equipment": {
-                "id": "XXXX",
-                "name": "Lorem Impsum"
-            },
-            "activation": {
-                "id": "XXXXXX",
-                "timestamp": "timestamp"
-            }
-        },
-        "2": {
-            "id": "XXXXXX",
-            "name": "Lorem Impsum",
-            "min": 2,
-            "temp": 120,
-            "psi": 80,
-            "timestamp": "timestamp",
-            "equipment": {
-                "id": "XXXX",
-                "name": "Lorem Impsum"
-            },
-            "activation": {
-                "id": "XXXXXX",
-                "timestamp": "timestamp"
-            }
-        }
-    },
     "route": {
         "id": "XXXXX",
-        "name": "Lorem Impsum"
+        "name": "Lorem Impsum",
+        "process": {
+            "1": {
+                "id": "XXXXXX",
+                "name": "Lorem Impsum",
+                "min": 2,
+                "temp": 120,
+                "psi": 80,
+                "timestamp": "timestamp",
+                "equipment": {
+                    "id": "XXXX",
+                    "name": "Lorem Impsum"
+                },
+                "activation": {
+                    "id": "XXXXXX",
+                    "timestamp": "timestamp"
+                }
+            },
+            "2": {
+                "id": "XXXXXX",
+                "name": "Lorem Impsum",
+                "min": 2,
+                "temp": 120,
+                "psi": 80,
+                "timestamp": "timestamp",
+                "equipment": {
+                    "id": "XXXX",
+                    "name": "Lorem Impsum"
+                },
+                "activation": {
+                    "id": "XXXXXX",
+                    "timestamp": "timestamp"
+                }
+            }
+        }
     },
     "cancellation": {
         "type": "A/B/C",
-        "desc": "Lorem impsum dolor"
+        "desc": "Lorem impsum dolor",
+        "user": {
+            "uid": "XXXXXx",
+            "username": "Jhon doe"
+        },
+        "timestamp": "timestamp"
     }
 }

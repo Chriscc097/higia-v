@@ -12,13 +12,13 @@ Higia V es una herramienta básica para la esterilización y desinfección de in
 
 ## Características
 
-1. **Control de Loncheras o Clientes**: Gestiona los inventarios de material para esterilizar de diferentes clientes, incluyendo instrumental y equipo biomédico. Cada cliente puede tener su propio inventario personalizado.
+1. **Control de Inventarios por clientes**: Gestiona los inventarios de material para esterilizar de diferentes clientes, incluyendo instrumental y equipo biomédico. Cada cliente puede tener su propio inventario personalizado.
 2. **Control de Procesos**: Ofrece una descripción detallada de cada proceso de esterilización, incluyendo tiempos, temperaturas y métodos utilizados. Facilita el seguimiento y la documentación de cada proceso.
 3. **Control de Rutas de Procesos**: Gestiona y optimiza las rutas de los procesos de esterilización, asegurando que cada paso se realice en el orden correcto y de manera eficiente.
 4. **Control de Inventario de Equipos Biomédicos**: Lleva un registro detallado de los equipos biomédicos disponibles, su estado y sus usos. Facilita la gestión del mantenimiento y la disponibilidad de los equipos.
-5. **Control de Cargas y Ciclos de Esterilización**: Monitorea y registra las cargas y los ciclos de esterilización, incluyendo los controles químicos y microbiológicos necesarios para asegurar la efectividad del proceso y la seguridad del instrumental.
-6. **Control de Usuarios**: Administra los usuarios que tienen acceso a la herramienta, asignando roles y permisos específicos para cada uno. Permite la creación, edición y eliminación de usuarios, así como la gestión de sus credenciales de acceso.
-7. **Control de Archivos de las Cargas**: Gestiona y almacena los archivos relacionados con las cargas de esterilización, incluyendo reportes, certificados y registros de control. Facilita el acceso y la consulta de estos documentos para auditorías y verificaciones.
+5. **Control de Cargas y Ciclos de Esterilización**: [En desarrollo] Monitorea y registra las cargas y los ciclos de esterilización, incluyendo los controles químicos y microbiológicos necesarios para asegurar la efectividad del proceso y la seguridad del instrumental.
+6. **Control de Usuarios**:[En desarrollo] Administra los usuarios que tienen acceso a la herramienta, asignando roles y permisos específicos para cada uno. Permite la creación, edición y eliminación de usuarios, así como la gestión de sus credenciales de acceso.
+7. **Control de Archivos de las Cargas**: [En desarrollo] Gestiona y almacena los archivos relacionados con las cargas de esterilización, incluyendo reportes, certificados y registros de control. Facilita el acceso y la consulta de estos documentos para auditorías y verificaciones.
 
 ## Instalación
 

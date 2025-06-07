@@ -20,7 +20,7 @@
     }
   ],
   "hosting": {
-    "public": "build",
+    "public": "public",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -44,7 +44,7 @@
       "port": 5001
     },
     "hosting": {
-      "port": 5000
+      "port": 5050
     },
     "tasks": {
       "port": 9499

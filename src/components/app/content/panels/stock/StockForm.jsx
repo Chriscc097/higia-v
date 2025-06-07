@@ -1,8 +1,9 @@
 import { collection, onSnapshot } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import { CirclePlus, Save, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import Select from "react-select";
-import { toast } from "react-toastify";
-import Firestore, { db } from "../../../../../controllers/Firebase/Firestore"; // Adjust the import according to your firebase configuration
+import { toast } from "react-toastify"; // Adjust the import according to your firebase configuration
+import FirebaseDataBase, { db } from "../../../../../firebase/FirebaseDatabase";
 import { dateToYYYYMMDD } from "../../../../../utils/dates-functions";
 import { useUserStore } from "./../../../../../context/userStore";
 import PackageForm from "./PackageForm";
@@ -17,7 +18,7 @@ const StockForm = ({ onClose }) => {
     package: {},
     uses: 0,
     clientId: "",
-    status: "Lonchera",
+    status: "Consultorio",
     entry: {
       user: {
         uid: currentUser.id,
@@ -99,10 +100,10 @@ const StockForm = ({ onClose }) => {
       return;
     }
 
-    let count = new Number(stock.package.count);
-    const quantity = new Number(stock.quantity);
+    let count = stock.package.count;
+    const quantity = stock.quantity;
 
-    await Firestore.update("packages", {
+    await FirebaseDataBase.update("packages", {
       count: (quantity + count),
       id: stock.package.id,
     });
@@ -123,7 +124,7 @@ const StockForm = ({ onClose }) => {
     }
 
     newStock.forEach((stockItem) => {
-      Firestore.create("stock", stockItem);
+      FirebaseDataBase.save("stock", stockItem);
     });
 
     toast.success("Material guardado correctamente");
@@ -137,10 +138,10 @@ const StockForm = ({ onClose }) => {
           <h3>Nuevo Material</h3>
           <div className="buttonIconSection">
             <div className="buttonIcon save" onClick={() => saveStock()}>
-              <img src="./save.png" />
+              <Save size={20} color="white" />
             </div>
             <div className="buttonIcon close" onClick={() => onClose()}>
-              <img src="./cross_white.png" />
+              <X size={15} color="white"/>
             </div>
           </div>
         </div>
@@ -161,7 +162,7 @@ const StockForm = ({ onClose }) => {
               className="buttonIcon save"
               onClick={() => setPackageFormSeen(true)}
             >
-              <img src="./plus_white.png" />
+              <CirclePlus size={20} color="white" />
             </div>
             <div className="formItem">
               <Select

@@ -5,11 +5,17 @@
     "lot": "lorem impsum",
     "exp": "timestamp",
     "entry": {
-        "timestamp": "timestamp",
-        "uid": ""
+        "date": "timestamp",
+        "user": {
+            "uid": "XXXX",
+            "username": "lorem impsum"
+        }
     },
-    "egress": {
-        "timestamp": "timestamp",
-        "uid": ""
+    "exit": {
+        "date": "timestamp",
+        "user": {
+            "uid": "XXXX",
+            "username": "lorem impsum"
+        }
     }
 }

@@ -1,0 +1,10 @@
+{
+    "id": "id",
+    "user": {
+        "id": "uid",
+        "username": ".username"
+    },
+    "date": "date",
+    "timestamp": "Timestamp.fromDate(new Date())",
+    "cycles": "cycles.length"
+}

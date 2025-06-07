@@ -7,11 +7,17 @@
     "dentistId": "1",
     "status": "Almacén/Consultorio/Baja",
     "entry": {
-        "uid": "XXXX",
-        "timestamp": "timestamp"
+        "user": {
+            "uid": "XXXX",
+            "username": "lorem impsum"
+        },
+        "date": "timestamp"
     },
     "exit": {
-        "uid": "XXXX",
-        "timestamp": "timestamp"
+        "user": {
+            "uid": "XXXX",
+            "username": "lorem impsum"
+        },
+        "date": "timestamp"
     }
 }

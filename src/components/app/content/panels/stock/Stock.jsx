@@ -6,8 +6,10 @@ import {
   query,
   startAfter,
 } from "firebase/firestore";
-import React, { useEffect, useRef, useState } from "react";
-import Firestore, { db } from "../../../../../controllers/Firebase/Firestore";
+import { CirclePlus, Loader } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import useClientStore from "../../../../../context/clientStore";
+import FirebaseDataBase, { db } from "../../../../../firebase/FirebaseDatabase";
 import { dateToYYYYMMDD } from "../../../../../utils/dates-functions";
 import ConfirmPopup from "../../../../utils/ConfirmPopup";
 import { useUserStore } from "./../../../../../context/userStore";
@@ -22,24 +24,11 @@ const Stock = () => {
   const [loading, setLoading] = useState(false);
   const [stockView, setStockView] = useState(false);
   const [lastVisible, setLastVisible] = useState(null);
-  const [clients, setClients] = useState([]);
   const [packages, setPackages] = useState([]);
   const [stockTablevisible, setStockTableVisible] = useState({});
   const { currentUser } = useUserStore();
   const [confirmToggleActivation, setConfirmToggleActivation] = useState(null);
-
-  useEffect(() => {
-    const unsubscribe = onSnapshot(
-      query(collection(db, "clients"), orderBy("businessName", "asc")),
-      (snapshot) => {
-        const clientsData = snapshot.docs
-          .map((doc) => doc.data())
-          .filter((client) => client.status === true);
-        setClients(clientsData);
-      }
-    );
-    return () => unsubscribe();
-  }, []);
+  const clients = useClientStore((state) => state.clients);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -161,14 +150,14 @@ const Stock = () => {
 
     let stockItem = { ...confirmToggleActivation };
 
-    if(!stockItem){
+    if (!stockItem) {
       setLoading(false);
       return;
     }
 
     if (stockItem.exit) {
       stockItem.exit = null;
-      stockItem.status = "Lonchera";
+      stockItem.status = "Consultorio";
     } else {
       stockItem.exit = {
         user: {
@@ -180,7 +169,7 @@ const Stock = () => {
       stockItem.status = "Disp. Final";
     }
     setConfirmToggleActivation(null);
-    await Firestore.update("stock", stockItem);
+    await FirebaseDataBase.update("stock", stockItem);
     setLoading(false);
   };
 
@@ -194,7 +183,7 @@ const Stock = () => {
               className="imgbutton"
               onClick={() => setStockFormVisible(true)}
             >
-              <img src="/add_white.png" alt="Nuevo Paquete" />
+              <CirclePlus size={20} color="white" />
               <p>Nuevo Material</p>
             </div>
           </div>
@@ -202,7 +191,7 @@ const Stock = () => {
       </div>
       <div className="content">
         <div className="clientSection" ref={centerRef}>
-          {clients.map((client) => (
+          {clients?.map((client) => (
             <div className="clientInfo" key={client.id}>
               <h3>{client.businessName}</h3>
               <div>
@@ -303,7 +292,7 @@ const Stock = () => {
                             </tbody>
                           </table>
                           {loading && (
-                            <div className="loading">Cargando...</div>
+                            <div className="loading"><Loader size={20} color="#292F36" /><p>Cargando</p></div>
                           )}
                         </div>
                       )}

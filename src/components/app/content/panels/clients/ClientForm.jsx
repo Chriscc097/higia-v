@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import { X } from "lucide-react";
+import { useState } from "react";
 import { toast } from "react-toastify";
-import Firestore from "../../../../../controllers/Firebase/Firestore";
+import FirebaseDataBase from "../../../../../firebase/FirebaseDatabase";
 import "./ClientForm.css";
 
 const ClientForm = ({ client, onClose }) => {
@@ -43,9 +44,9 @@ const ClientForm = ({ client, onClose }) => {
       return;
     }
     if (formData.id) {
-      Firestore.update("clients", formData);
+      FirebaseDataBase.update("clients", formData);
     } else {
-      Firestore.create("clients", formData);
+      FirebaseDataBase.save("clients", formData);
     }
     onClose();
   };
@@ -54,7 +55,7 @@ const ClientForm = ({ client, onClose }) => {
     <div className="formContainer">
       <div className="clientForm">
         <form onSubmit={handleSubmit}>
-          <h3>{formData.id ? "Edita " : "Crea"} una Lonchera</h3>
+          <h3>{formData.id ? "Edita " : "Crea"} un Cliente</h3>
           <div>
             <input
               placeholder="Razón Social"
@@ -112,7 +113,7 @@ const ClientForm = ({ client, onClose }) => {
         </form>
         <div className="closeButtonColumn">
           <div className="buttonIcon close" onClick={() => onClose()}>
-            <img src="./cross_white.png" alt="close" />
+            <X size={15} color="white"/>
           </div>
         </div>
       </div>
