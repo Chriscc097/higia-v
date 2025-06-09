@@ -1,7 +1,7 @@
 import {
   collection,
-  getDocs,
   limit,
+  onSnapshot,
   orderBy,
   query,
   startAfter,
@@ -28,72 +28,37 @@ const Loads = () => {
   const [loads, setLoads] = useState([]); // Estado para los datos cargados
   const [lastDoc, setLastDoc] = useState(null); // Estado para el último documento cargado
   const [loading, setLoading] = useState(false); // Estado de carga
-  const [hasMore, setHasMore] = useState(true); // Para evitar más cargas si ya no hay datos
+  // Para evitar más cargas si ya no hay datos
   const [selectedLoad, setSelectedLoad] = useState(null); // Estado para la carga seleccionada
   const [activationsVisible, setActivationsVisible] = useState(false);
   const [exitFormVisible, setExitFormVisible] = useState(false);
+  const [pageIndex, setPageIndex] = useState(1);
+  const [pageLength, setPageLength] = useState(30);
+  const [hasMore, setHasMore] = useState(true);
 
-  // Función para cargar los datos iniciales
-  const loadInitialData = async () => {
-    setLoading(true);
-    try {
-      const initialQuery = query(
-        collection(db, "loads"),
-        orderBy("date", "desc"),
-        limit(20)
-      );
-      const snapshot = await getDocs(initialQuery);
-      const data = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-      setLoads(data);
-      setLastDoc(snapshot.docs[snapshot.docs.length - 1]); // Guarda el último documento para paginación
-      setHasMore(snapshot.docs.length === 20); // Si hay menos de 20 documentos, no hay más datos
-    } catch (error) {
-      console.error("Error loading data:", error);
-    }
+ useEffect(() => {
+  setLoading(true);
+  const loadCollection = collection(db, "loads");
+  const queryOrder = orderBy("date", "desc");
+  const queryLimit = limit(pageLength);
+
+  const q = lastDoc
+    ? query(loadCollection, queryOrder, startAfter(lastDoc), queryLimit)
+    : query(loadCollection, queryOrder, queryLimit);
+
+  const unsubscribe = onSnapshot(q, (snapshot) => {
+    const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    setLoads(data);
+    setHasMore(snapshot.docs.length === pageLength);
     setLoading(false);
-  };
-
-  // Función para cargar más datos (scroll infinito)
-  const loadMoreData = async () => {
-    if (!hasMore || loading) return; // Evita cargar si no hay más datos o ya está cargando
-    setLoading(true);
-    try {
-      const nextQuery = query(
-        collection(db, "loads"),
-        orderBy("date", "desc"),
-        startAfter(lastDoc),
-        limit(10)
-      );
-      const snapshot = await getDocs(nextQuery);
-      const data = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-      setLoads((prevLoads) => [...prevLoads, ...data]);
-      setLastDoc(snapshot.docs[snapshot.docs.length - 1]); // Actualiza el último documento
-      setHasMore(snapshot.docs.length === 10); // Si hay menos de 10 documentos, no hay más datos
-    } catch (error) {
-      console.error("Error loading more data:", error);
+    // Guarda el último documento para la siguiente página
+    if (snapshot.docs.length > 0) {
+      setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
     }
-    setLoading(false);
-  };
+  });
 
-  // Hook para cargar los datos iniciales
-  useEffect(() => {
-    loadInitialData();
-  }, []);
-
-  // Detectar el scroll al final de la página
-  const handleScroll = () => {
-    if (
-      window.innerHeight + document.documentElement.scrollTop + 100 >=
-      document.documentElement.offsetHeight
-    ) {
-      loadMoreData();
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll); // Limpia el evento al desmontar
-  }, [lastDoc, hasMore, loading]);
+  return () => unsubscribe();
+}, [pageLength]);
 
   return (
     <div className="loads">

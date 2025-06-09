@@ -1,4 +1,3 @@
-import React from "react";
 import { usePanelStore } from "../../../../context/panelStore";
 import Client from "../panels/clients/Client";
 import Equipments from "../panels/equipments/Equipments";
@@ -8,15 +7,15 @@ import Stock from "../panels/stock/Stock";
 import "./Content.css";
 
 const Content = () => {
-  const { currentPanel, changePanel } = usePanelStore();
+  const { currentPanel } = usePanelStore();
 
-  return <div className="mainContent">
+  return (<div className="mainContent">
     {currentPanel === "loads" && <Loads />}
     {currentPanel === "stock" && <Stock />}
     {currentPanel === "client" && <Client />}
     {currentPanel === "routes" && <Routes />}
     {currentPanel === "equipments" && <Equipments />}
-  </div>;
+  </div>);
 };
 
 export default Content;

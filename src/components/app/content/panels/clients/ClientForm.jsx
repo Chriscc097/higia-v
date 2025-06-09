@@ -13,6 +13,7 @@ const ClientForm = ({ client, onClose }) => {
     address: client?.address || "",
     status: client?.status || false,
     id: client?.id,
+    prefix: client?.prefix,
   });
 
   const handleChange = (e) => {
@@ -38,6 +39,7 @@ const ClientForm = ({ client, onClose }) => {
       !formData.nit ||
       !formData.phone ||
       !formData.email ||
+      !formData.prefix ||
       !formData.address
     ) {
       toast.warn("Todos los campos son obligatorios");
@@ -62,6 +64,15 @@ const ClientForm = ({ client, onClose }) => {
               type="text"
               name="businessName"
               value={formData.businessName}
+              onChange={handleChange}
+            />
+          </div>
+          <div>
+            <input
+              placeholder="Prefijo (Dr./Dra.)"
+              type="text"
+              name="prefix"
+              value={formData.prefix}
               onChange={handleChange}
             />
           </div>
@@ -113,7 +124,7 @@ const ClientForm = ({ client, onClose }) => {
         </form>
         <div className="closeButtonColumn">
           <div className="buttonIcon close" onClick={() => onClose()}>
-            <X size={15} color="white"/>
+            <X size={15} color="white" />
           </div>
         </div>
       </div>
