@@ -1,7 +1,9 @@
-import { X } from "lucide-react";
+import { Save, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import FirebaseDataBase from "../../../../../firebase/FirebaseDatabase";
+import ToggleButton from "../../../../utils/ToggleButton";
+import Stock from "../stock/Stock";
 import "./ClientForm.css";
 
 const ClientForm = ({ client, onClose }) => {
@@ -24,15 +26,7 @@ const ClientForm = ({ client, onClose }) => {
     });
   };
 
-  const handleStatus = () => {
-    setFormData({
-      ...formData,
-      status: !formData.status,
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     // Handle form submission
     if (
       !formData.businessName ||
@@ -56,18 +50,22 @@ const ClientForm = ({ client, onClose }) => {
   return (
     <div className="formContainer">
       <div className="clientForm">
-        <form onSubmit={handleSubmit}>
-          <h3>{formData.id ? "Edita " : "Crea"} un Cliente</h3>
-          <div>
-            <input
-              placeholder="Razón Social"
-              type="text"
-              name="businessName"
-              value={formData.businessName}
-              onChange={handleChange}
-            />
+        <div className="formHeader">
+          <h3>Datos del Odontólogo</h3>
+          <div className="buttonIconSection">
+            <div className="buttonIcon save" onClick={() => handleSubmit()}>
+              <Save size={20} color="white" />
+              <p>Guardar</p>
+            </div>
+            <div className="buttonIcon close" onClick={() => onClose()}>
+              <X size={15} color="white" />
+            </div>
           </div>
-          <div>
+        </div>
+
+        <div className="formRow">
+          <div className="formItem">
+            <h5>Prefijo</h5>
             <input
               placeholder="Prefijo (Dr./Dra.)"
               type="text"
@@ -76,7 +74,17 @@ const ClientForm = ({ client, onClose }) => {
               onChange={handleChange}
             />
           </div>
-          <div>
+          <div className="formItem">
+            <h5>Razón Social</h5>
+            <input
+              type="text"
+              name="businessName"
+              value={formData.businessName}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="formItem">
+            <h5>NIT</h5>
             <input
               type="text"
               name="nit"
@@ -85,7 +93,8 @@ const ClientForm = ({ client, onClose }) => {
               onChange={handleChange}
             />
           </div>
-          <div>
+          <div className="formItem">
+            <h5>Celular</h5>
             <input
               type="text"
               name="phone"
@@ -94,16 +103,21 @@ const ClientForm = ({ client, onClose }) => {
               onChange={handleChange}
             />
           </div>
-          <div>
-            <input
-              type="email"
-              name="email"
-              placeholder="Correo Electrónico"
-              value={formData.email}
-              onChange={handleChange}
+          <div className="formItem">
+            <h5>Activo</h5>
+            <ToggleButton
+              value={formData.status}
+              label={""}
+              onToggle={(value) =>
+                handleChange({ target: { name: "status", value } })
+              }
             />
           </div>
-          <div>
+        </div>
+
+        <div className="formRow">
+          <div className="formItem">
+            <h5>Dirección</h5>
             <input
               type="text"
               name="address"
@@ -112,20 +126,20 @@ const ClientForm = ({ client, onClose }) => {
               onChange={handleChange}
             />
           </div>
-          <div>
-            <label>Estado:</label>
+          <div className="formItem">
+            <h5>Correo</h5>
             <input
-              type="checkbox"
-              checked={formData.status}
-              onChange={handleStatus}
+              type="email"
+              name="email"
+              placeholder="Correo Electrónico"
+              value={formData.email}
+              onChange={handleChange}
             />
           </div>
-          <button type="submit">{formData?.id ? "Guardar" : "Crear"}</button>
-        </form>
-        <div className="closeButtonColumn">
-          <div className="buttonIcon close" onClick={() => onClose()}>
-            <X size={15} color="white" />
-          </div>
+        </div>
+
+        <div className="content">
+          <Stock client={client} />
         </div>
       </div>
     </div>

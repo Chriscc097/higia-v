@@ -1,79 +1,50 @@
 import {
   collection,
-  getDocs,
   limit,
+  onSnapshot,
+  orderBy,
   query,
   startAfter,
 } from "firebase/firestore";
+import { Check, CirclePlus, Loader, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { db } from "../../../../../firebase/FirebaseDatabase";
+import PageIndex from "../../../../utils/pageIndex/PageIndex";
 import "./Process.css";
 import ProcessForm from "./ProcessForm";
-import { Check, Loader, X, CirclePlus } from "lucide-react";
 
 const Process = ({ onClose }) => {
   const [process, setProcess] = useState([]); // Estado para los datos cargados
   const [lastDoc, setLastDoc] = useState(null); // Estado para el último documento cargado
   const [loading, setLoading] = useState(false); // Estado de carga
-  const [hasMore, setHasMore] = useState(true); // Para evitar más cargas si ya no hay datos
   const [selectedProcess, setSelectedProcess] = useState(null);
 
-  // Función para cargar los datos iniciales
-  const loadInitialData = async () => {
+  const [pageIndex, setPageIndex] = useState(1);
+  const [pageLength, setPageLength] = useState(10);
+  const [hasMore, setHasMore] = useState(true);
+  useEffect(() => {
     setLoading(true);
-    try {
-      const initialQuery = query(collection(db, "process"), limit(20));
-      const snapshot = await getDocs(initialQuery);
-      const data = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    const loadCollection = collection(db, "process");
+    const queryOrder = orderBy("name", "asc");
+    const queryLimit = limit(pageLength);
+
+    const q = lastDoc
+      ? query(loadCollection, queryOrder, startAfter(lastDoc), queryLimit)
+      : query(loadCollection, queryOrder, queryLimit);
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setProcess(data);
-      setLastDoc(snapshot.docs[snapshot.docs.length - 1]); // Guarda el último documento para paginación
-      setHasMore(snapshot.docs.length === 20); // Si hay menos de 20 documentos, no hay más datos
-    } catch (error) {
-      console.error("Error loading data:", error);
-    }
-    setLoading(false);
-  };
+      setHasMore(snapshot.docs.length === pageLength);
+      setLoading(false);
+      // Guarda el último documento para la siguiente página
+      if (snapshot.docs.length > 0) {
+        setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
+      }
+    });
 
-  // Función para cargar más datos (scroll infinito)
-  const loadMoreData = async () => {
-    if (!hasMore || loading) return; // Evita cargar si no hay más datos o ya está cargando
-    setLoading(true);
-    try {
-      const nextQuery = query(
-        collection(db, "process"),
-        startAfter(lastDoc),
-        limit(10)
-      );
-      const snapshot = await getDocs(nextQuery);
-      const data = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-      setProcess((prevProcess) => [...prevProcess, ...data]);
-      setLastDoc(snapshot.docs[snapshot.docs.length - 1]); // Actualiza el último documento
-      setHasMore(snapshot.docs.length === 10); // Si hay menos de 10 documentos, no hay más datos
-    } catch (error) {
-      console.error("Error loading more data:", error);
-    }
-    setLoading(false);
-  };
-
-  // Hook para cargar los datos iniciales
-  useEffect(() => {
-    loadInitialData();
-  }, []);
-
-  // Detectar el scroll al final de la página
-  const handleScroll = () => {
-    if (
-      window.innerHeight + document.documentElement.scrollTop + 100 >=
-      document.documentElement.offsetHeight
-    ) {
-      loadMoreData();
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll); // Limpia el evento al desmontar
-  }, [lastDoc, hasMore, loading]);
+    return () => unsubscribe();
+  }, [pageIndex]);
 
   return (
     <div className="formContainer">
@@ -89,7 +60,7 @@ const Process = ({ onClose }) => {
             </div>
             <div className="closeButtonColumn">
               <div className="buttonIcon close" onClick={() => onClose()}>
-                <X size={15} color="white"/>
+                <X size={15} color="white" />
               </div>
             </div>
           </div>
@@ -168,8 +139,18 @@ const Process = ({ onClose }) => {
                 })}
               </tbody>
             </table>
-            {loading && <div className="loading"><Loader size={20} color="#292F36" /><p>Cargando</p></div>}
+            {loading && (
+              <div className="loading">
+                <Loader size={20} color="#292F36" />
+                <p>Cargando</p>
+              </div>
+            )}
           </div>
+          <PageIndex
+            currentIndex={pageIndex}
+            onChange={(i) => setPageIndex(i)}
+            hasMore={hasMore}
+          />
         </div>
         {selectedProcess && (
           <ProcessForm

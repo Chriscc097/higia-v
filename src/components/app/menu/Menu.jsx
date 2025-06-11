@@ -1,11 +1,11 @@
 import { signOut } from "firebase/auth";
-import { CircleCheck, CircleUserRound, LogOut, Package2, Route, Settings, Wrench } from "lucide-react";
+import { CircleCheck, CircleUserRound, LogOut, Route, Settings, Wrench } from "lucide-react";
 import { usePanelStore } from "../../../context/panelStore";
 import { auth } from "./../../../firebase/FirebaseAuth";
 import "./Menu.css";
 
 const Menu = () => {
-  const { currentPanel, changePanel } = usePanelStore();
+  const {  changePanel } = usePanelStore();
 
   const handleLogout = () => {
     signOut(auth);
@@ -26,17 +26,13 @@ const Menu = () => {
           <Route color="#292F36" size={20}/>
           <p>Rutas</p>
         </div>
-        <div className="menuOption" onClick={() => changePanel("stock")}>
-           <Package2 color="#292F36" size={20}/>
-          <p>Paquetes</p>
-        </div>
         <div className="menuOption" onClick={() => changePanel("equipments")}>
            <Wrench color="#292F36" size={20}/>
           <p>Equipos</p>
         </div>
         <div className="menuOption" onClick={() => changePanel("client")}>
           <CircleUserRound color="#292F36" size={20}/>
-          <p>Profesionales</p>
+          <p>Odontólogos</p>
         </div>
       </div>
 

@@ -74,10 +74,10 @@ const ExitForm = ({ onClose }) => {
     let load;
     try {
       load = await LoadManager.get(cycle.loadId);
-      if (!load.cycles.remaining <= 0) {
+      if (load.cycles.remaining <= 0) {
         toast.update(toastId, {
           render: "La carga del ciclo no tiene existencias",
-          type: "error",
+          type: "warn",
           autoClose: 3000,
           isLoading: false,
         });
@@ -86,7 +86,7 @@ const ExitForm = ({ onClose }) => {
     } catch (e) {
       toast.update(toastId, {
         render: "No hay una carga relacionada al ciclo",
-        type: "warn",
+        type: "error",
         autoClose: 3000,
         isLoading: false,
       });
@@ -192,7 +192,7 @@ const ExitForm = ({ onClose }) => {
                   <tr>
                     <th></th>
                     <th>Ciclo</th>
-                    <th>Profesional</th>
+                    <th>Odontólogo</th>
                     <th>Paquete</th>
                     <th>Vencimiento</th>
                     <th></th>
@@ -243,7 +243,7 @@ const ExitForm = ({ onClose }) => {
         {isConfirmSeen && (
           <ConfirmPopUp
             message={"Hay ciclos en la lista, ¿Deseas salir sin procesarlos?"}
-            onClose={() => setConfirmSeen(false)}
+            onCancel={() => setConfirmSeen(false)}
             onConfirm={() => onClose()}
           />
         )}

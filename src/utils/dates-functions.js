@@ -1,4 +1,3 @@
-const { DateTime } = require("luxon");
 
 function format(inputDate) {
   const date = new Date(inputDate.seconds * 1000);
@@ -221,10 +220,6 @@ function getWeekDay(fechaDate) {
   return nombresDias[fechaDate.getDay()];
 }
 
-function dateToUTC(fecha) {
-  return DateTime.fromJSDate(fecha).setZone("00:00");
-}
-
 function dateIsBefore(fecha1, fecha2) {
   // Convertir las entradas a objetos de fecha si no lo son
   fecha1 = new Date(fecha1);
@@ -404,6 +399,6 @@ function formatDateHour(date) {
   return `${year}-${month}-${day} ${hour}:${minute}`;
 }
 
-export { addTimeToDate, dateIsBefore, dateToLongString, dateToUTC, dateToYYYYMMDD, diffDays, format, formatDate, formatDateHour, getAge, getAnniversary, getDayOfYear, getExpColor, getHolidaysByYearInterval, getWeekDay, isBusinessDay, isWorkingHours, lastBusinessDay, nextBusinessDay, stringDateHourToDate, stringToDate };
+export { addTimeToDate, dateIsBefore, dateToLongString, dateToYYYYMMDD, diffDays, format, formatDate, formatDateHour, getAge, getAnniversary, getDayOfYear, getExpColor, getHolidaysByYearInterval, getWeekDay, isBusinessDay, isWorkingHours, lastBusinessDay, nextBusinessDay, stringDateHourToDate, stringToDate };
 
 

@@ -1,5 +1,5 @@
 import { CirclePlus, Loader } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useClientStore from "../../../../../context/clientStore";
 import "./Client.css";
 import ClientForm from "./ClientForm";
@@ -7,9 +7,15 @@ import ClientForm from "./ClientForm";
 const Client = () => {
   const [client, setClient] = useState(null); // Estado para el cliente seleccionado
   const [loading, setLoading] = useState(false);
-  const [isClientFormSeen, setClientFormSeen] = useState(false); 
+  const [isClientFormSeen, setClientFormSeen] = useState(false);
   const centerRef = useRef(null);
-  const clients = useClientStore((state) => state.clients);
+  const {clients, loadClients} = useClientStore();
+
+  useEffect(() => {
+    setLoading(true);
+    loadClients();
+    setLoading(false);
+  }, [loadClients]);
 
   const handleSelect = async (client) => {
     setClient(client);
@@ -29,12 +35,12 @@ const Client = () => {
   return (
     <div className="clients">
       <div className="header">
-        <h2 className="title">Cliente</h2>
+        <h2 className="title">Odontólogos</h2>
         <div className="leftHeader">
           <div className="buttons">
             <div className="imgbutton" onClick={handleNew}>
-              <CirclePlus size={20} color="white"/>
-              <p>Nuevo Cliente</p>
+              <CirclePlus size={20} color="white" />
+              <p>Nuevo Odontólogo</p>
             </div>
           </div>
         </div>
@@ -48,7 +54,6 @@ const Client = () => {
                 <th>Estado</th>
                 <th>RUT</th>
                 <th>Razón Social</th>
-                <th>Paquetes</th>
               </tr>
             </thead>
             <tbody>
@@ -74,13 +79,17 @@ const Client = () => {
                     </td>
                     <td>{clientRut}</td>
                     <td>{clientName}</td>
-                    <td>{totalPackages}</td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
-          {loading && <div className="loading"><Loader size={20} color="#292F36" /><p>Cargando</p></div>}
+          {loading && (
+            <div className="loading">
+              <Loader size={20} color="#292F36" />
+              <p>Cargando</p>
+            </div>
+          )}
         </div>
       </div>
       {isClientFormSeen && (

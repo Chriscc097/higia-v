@@ -19,6 +19,7 @@ import {
   diffDays,
   getExpColor,
 } from "../../../../../utils/dates-functions";
+import PageIndex from "../../../../utils/pageIndex/PageIndex";
 import Activation from "../activations/Activation";
 import ExitForm from "./exit/ExitForm";
 import LoadForm from "./form/LoadForm";
@@ -32,10 +33,10 @@ const Loads = () => {
   const [selectedLoad, setSelectedLoad] = useState(null); // Estado para la carga seleccionada
   const [activationsVisible, setActivationsVisible] = useState(false);
   const [exitFormVisible, setExitFormVisible] = useState(false);
+
   const [pageIndex, setPageIndex] = useState(1);
   const [pageLength, setPageLength] = useState(30);
   const [hasMore, setHasMore] = useState(true);
-
  useEffect(() => {
   setLoading(true);
   const loadCollection = collection(db, "loads");
@@ -58,7 +59,7 @@ const Loads = () => {
   });
 
   return () => unsubscribe();
-}, [pageLength]);
+}, [pageIndex]);
 
   return (
     <div className="loads">
@@ -155,6 +156,7 @@ const Loads = () => {
             </div>
           )}
         </div>
+         <PageIndex currentIndex={pageIndex} onChange={(i)=> setPageIndex(i)} hasMore={hasMore}/>
         {selectedLoad && (
           <LoadForm onClose={() => setSelectedLoad(null)} load={selectedLoad} />
         )}

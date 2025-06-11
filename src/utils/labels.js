@@ -12,11 +12,7 @@ async function generateBarcodePDF(labels, loadId) {
 
         // Genera todos los códigos de barras en paralelo
         const barcodeImages = await Promise.all(
-            labels.map(label =>
-                label.code
-                    ? generateBarcode(label.code)
-                    : Promise.resolve(null)
-            )
+            labels.map((label) => generateBarcode(label.code))
         );
 
         // 🔄 Recorre los labels y genera las celdas
@@ -48,11 +44,16 @@ async function generateBarcodePDF(labels, loadId) {
                 tableBody.push(row);
                 row = [];
             }
+
         }
 
         if (row.length > 0) {
+            while (row.length < 4) {
+                row.push({ text: '' }); // rellena con celdas vacías
+            }
             tableBody.push(row);
         }
+
 
         const content = [{
             table: {
@@ -63,7 +64,7 @@ async function generateBarcodePDF(labels, loadId) {
 
         const docDefinition = {
             content,
-            pageMargins: [9, 9, 9, 9],
+            pageMargins: [10, 10, 10, 10],
             pageSize: 'LETTER'
         };
 

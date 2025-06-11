@@ -87,7 +87,7 @@ const StockForm = ({ onClose }) => {
       return;
     }
     if (!stock.clientId) {
-      toast.warn("Selecciona primero un cliente");
+      toast.warn("Selecciona primero un Odontólogo");
       return;
     }
     if (!stock.quantity) {
@@ -139,6 +139,7 @@ const StockForm = ({ onClose }) => {
           <div className="buttonIconSection">
             <div className="buttonIcon save" onClick={() => saveStock()}>
               <Save size={20} color="white" />
+              <p>Agregar Material</p>
             </div>
             <div className="buttonIcon close" onClick={() => onClose()}>
               <X size={15} color="white"/>
@@ -172,7 +173,7 @@ const StockForm = ({ onClose }) => {
                   value: client.id,
                   label: client.businessName,
                 }))}
-                placeholder="Cliente"
+                placeholder="Odontólogo"
               />
             </div>
           </div>

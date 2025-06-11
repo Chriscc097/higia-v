@@ -1021,7 +1021,7 @@ const LoadForm = ({ onClose, load }) => {
                           value: client.id,
                           label: client.businessName,
                         }))}
-                        placeholder="Cliente"
+                        placeholder="Odontólogo"
                       />
                     </div>
                     <div className="formItem">
@@ -1051,7 +1051,7 @@ const LoadForm = ({ onClose, load }) => {
                     <thead>
                       <tr>
                         <th>Ciclo</th>
-                        <th>Profesional</th>
+                        <th>Odontólogo</th>
                         <th>Paquete</th>
                         <th>Usos</th>
                         <th></th>

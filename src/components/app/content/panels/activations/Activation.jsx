@@ -4,6 +4,7 @@ import {
   onSnapshot,
   orderBy,
   query,
+  startAfter,
 } from "firebase/firestore";
 import { CirclePlus, Loader, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -11,6 +12,7 @@ import { toast } from "react-toastify";
 import FirebaseDataBase, { db } from "../../../../../firebase/FirebaseDatabase";
 import { dateToYYYYMMDD } from "../../../../../utils/dates-functions";
 import ConfirmPopup from "../../../../utils/ConfirmPopup";
+import PageIndex from "../../../../utils/pageIndex/PageIndex";
 import { useUserStore } from "./../../../../../context/userStore";
 import "./Activation.css";
 import ActivationForm from "./ActivationForm";
@@ -22,22 +24,35 @@ const Activation = ({ onClose }) => {
   const [activations, setActivations] = useState([]);
   const [confirmUnactivation, setConfirmUnactivation] = useState(null);
 
+  
+  const [pageIndex, setPageIndex] = useState(1);
+  const [pageLength, setPageLength] = useState(20);
+  const [hasMore, setHasMore] = useState(true);
+  const [lastDoc, setLastDoc] = useState(null);
+
   useEffect(() => {
     setLoading(true);
-    const unsubscribe = onSnapshot(
-      query(
-        collection(db, "activations"),
-        orderBy("entry.date", "desc"),
-        limit(20)
-      ),
-      (snapshot) => {
-        const data = snapshot.docs.map((doc) => doc.data());
-        setActivations(data);
+    const loadCollection = collection(db, "activations");
+    const queryOrder = orderBy("entry.date", "desc");
+    const queryLimit = limit(pageLength);
+
+    const q = lastDoc
+      ? query(loadCollection, queryOrder, startAfter(lastDoc), queryLimit)
+      : query(loadCollection, queryOrder, queryLimit);
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setActivations(data);
+      setHasMore(snapshot.docs.length === pageLength);
+      setLoading(false);
+      // Guarda el último documento para la siguiente página
+      if (snapshot.docs.length > 0) {
+        setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
       }
-    );
-    setLoading(false);
+    });
+
     return () => unsubscribe();
-  }, []);
+  }, [pageIndex]);
 
   const unActiveStock = async () => {
     const toastId = toast.loading("Inactivando...");
@@ -166,6 +181,11 @@ const Activation = ({ onClose }) => {
               </div>
             )}
           </div>
+          <PageIndex
+            currentIndex={pageIndex}
+            onChange={(i) => setPageIndex(i)}
+            hasMore={hasMore}
+          />
         </div>
         {selectedActivation && (
           <ActivationForm

@@ -46,7 +46,7 @@ const ActivationForm = ({ inputActivation, onClose }) => {
     // Handle form submission
 
     if (
-      activation?.entry?.date?.toDate() <= new Date() ||
+      activation?.entry?.date?.toDate() >= new Date() ||
       !activation?.entry?.date
     ) {
       toast.warn("Selecciona una fecha y hora válida");

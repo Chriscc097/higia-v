@@ -46,14 +46,7 @@ const LogIn = () => {
     setLoading(true);
     const formData = new FormData(e.target);
 
-    const { username, email, password, passwordConfirm } =
-      Object.fromEntries(formData);
-
-    if (!username) {
-      toast.warn("Escribe un nombre de usuario");
-      setLoading(false);
-      return;
-    }
+    const { email, password, passwordConfirm } = Object.fromEntries(formData);
     if (!email) {
       toast.warn("Escribe un email");
       setLoading(false);
@@ -103,6 +96,7 @@ const LogIn = () => {
             name="email"
             disabled={isLoading}
           />
+
           <input
             type="password"
             name="password"

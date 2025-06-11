@@ -8,6 +8,7 @@
   height: 220px;
   text-align: center;
   align-items: flex-start;
+  z-index: 10;
 
   form {
     display: flex;

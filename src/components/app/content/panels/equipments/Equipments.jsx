@@ -9,6 +9,7 @@ import {
 import { CirclePlus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { db } from "../../../../../firebase/FirebaseDatabase";
+import PageIndex from "../../../../utils/pageIndex/PageIndex";
 import EquipmentForm from "./EquipmentForm";
 import "./Equipments.css";
 
@@ -17,83 +18,35 @@ const Equipments = () => {
   const [lastDoc, setLastDoc] = useState(null); // Estado para el último documento cargado
   const [Equipment, setEquipment] = useState(null); // Estado para el Equipment seleccionado
   const [loading, setLoading] = useState(false); // Estado de carga
-  const [hasMore, setHasMore] = useState(true); // Para evitar más cargas si ya no hay datos
   const [lastVisible, setLastVisible] = useState(null);
   const centerRef = useRef(null);
 
-  // Function to load initial data
-  const loadEquipments = async (initial = false) => {
-    if (loading) return;
-
+  const [pageIndex, setPageIndex] = useState(1);
+  const [pageLength, setPageLength] = useState(20);
+  const [hasMore, setHasMore] = useState(true);
+  useEffect(() => {
     setLoading(true);
-    const equipmentsCollection = collection(db, "equipments");
-    let q;
+    const loadCollection = collection(db, "equipments");
+    const queryOrder = orderBy("name", "asc");
+    const queryLimit = limit(pageLength);
 
-    if (initial) {
-      q = query(equipmentsCollection, orderBy("name", "asc"), limit(20));
-    } else {
-      q = query(
-        equipmentsCollection,
-        orderBy("name", "asc"),
-        startAfter(lastVisible),
-        limit(32)
-      );
-    }
-    onSnapshot(q, (querySnapshot) => {
-      if (!querySnapshot.empty) {
-        const newEquipments = querySnapshot.docs.map((doc) => ({
-          id: doc.id, // Incluye el ID del documento para evitar duplicados
-          ...doc.data(),
-        }));
+    const q = lastDoc
+      ? query(loadCollection, queryOrder, startAfter(lastDoc), queryLimit)
+      : query(loadCollection, queryOrder, queryLimit);
 
-        setEquipments((prev) => {
-          const mergedEquipments = [...prev, ...newEquipments];
-          // Eliminar duplicados basados en el ID
-          const uniqueEquipments = mergedEquipments.filter(
-            (Equipment, index, self) =>
-              index === self.findIndex((c) => c.id === Equipment.id)
-          );
-          return initial ? newEquipments : uniqueEquipments;
-        });
-
-        setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
-      }
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setEquipments(data);
+      setHasMore(snapshot.docs.length === pageLength);
       setLoading(false);
-    });
-  };
-
-  // Hook para cargar los datos iniciales
-  useEffect(() => {
-    loadEquipments(true);
-  }, []);
-
-  useEffect(() => {
-    centerRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [Equipments]);
-
-  // Manejo del scroll
-  const handleScroll = () => {
-    const container = centerRef.current;
-
-    if (
-      container.scrollTop + container.EquipmentHeight >=
-      container.scrollHeight - 10
-    ) {
-      loadEquipments(); // Cargar más contactos al llegar al final
-    }
-  };
-
-  useEffect(() => {
-    const centerDiv = centerRef.current;
-    if (centerDiv) {
-      centerDiv.addEventListener("scroll", handleScroll);
-    }
-    return () => {
-      if (centerDiv) {
-        centerDiv.removeEventListener("scroll", handleScroll);
+      // Guarda el último documento para la siguiente página
+      if (snapshot.docs.length > 0) {
+        setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
       }
-    };
-  }, [lastVisible]);
+    });
+
+    return () => unsubscribe();
+  }, [pageIndex]);
 
   const handleSelect = async (Equipment) => {
     setEquipment(Equipment);
@@ -160,6 +113,11 @@ const Equipments = () => {
           </table>
           {loading && <div className="loading">Cargando...</div>}
         </div>
+         <PageIndex
+            currentIndex={pageIndex}
+            onChange={(i) => setPageIndex(i)}
+            hasMore={hasMore}
+          />
       </div>
       {Equipment && (
         <EquipmentForm equipment={Equipment} onClose={handleUnSelect} />
