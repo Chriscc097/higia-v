@@ -25,7 +25,10 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint .",
-    "deploy-hosting": "npm run build && firebase deploy --only hosting"
+    "deploy-hosting": "npm run build && firebase deploy --only hosting",
+    "deploy-functions": "npm run build && firebase deploy --only functions",
+    "deploy": "npm run build && firebase deploy",
+    "gitpush": "git add . && git commit && git push origin main"
   },
   "eslintConfig": {
     "extends": [

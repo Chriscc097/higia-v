@@ -23,3 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 **/keys.js
 **.env
+*.log
+firestore-debug.log
