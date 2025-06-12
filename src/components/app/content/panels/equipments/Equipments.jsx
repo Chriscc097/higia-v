@@ -12,6 +12,7 @@ import { db } from "../../../../../firebase/FirebaseDatabase";
 import PageIndex from "../../../../utils/pageIndex/PageIndex";
 import EquipmentForm from "./EquipmentForm";
 import "./Equipments.css";
+import LoadingPanel from "../../../../utils/loadingPanel/LoadingPanel";
 
 const Equipments = () => {
   const [Equipments, setEquipments] = useState([]); // Estado para los datos cargados
@@ -111,7 +112,7 @@ const Equipments = () => {
               })}
             </tbody>
           </table>
-          {loading && <div className="loading">Cargando...</div>}
+          {loading && <LoadingPanel/>}
         </div>
          <PageIndex
             currentIndex={pageIndex}

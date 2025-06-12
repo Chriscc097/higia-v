@@ -1,7 +1,7 @@
-import { X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import FirebaseDataBase from "../../../../../firebase/FirebaseDatabase";
+import BrandedButton from "../../../../utils/brandedButton/BrandedButton";
 import "./EquipmentForm.css";
 
 const EquipmentForm = ({ equipment, onClose }) => {
@@ -28,8 +28,7 @@ const EquipmentForm = ({ equipment, onClose }) => {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     // Handle form submission
     if (!formData.name || !formData.serial || !formData.uses) {
       toast.warn("Todos los campos son obligatorios");
@@ -46,7 +45,7 @@ const EquipmentForm = ({ equipment, onClose }) => {
   return (
     <div className="formContainer">
       <div className="EquipmentForm">
-        <form onSubmit={handleSubmit}>
+        <form>
           <h3>{formData?.id ? "Edita " : "Crea"} un Equipo</h3>
           <div>
             <input
@@ -83,12 +82,10 @@ const EquipmentForm = ({ equipment, onClose }) => {
               onChange={handleStatus}
             />
           </div>
-          <button type="submit">{formData?.id ? "Guardar" : "Crear"}</button>
+          <BrandedButton type="save" label={"Guardar"} onClick={handleSubmit}/>
         </form>
         <div className="closeButtonColumn">
-          <div className="buttonIcon close" onClick={() => onClose()}>
-            <X size={15} color="white"/>
-          </div>
+          <BrandedButton type="close" onClick={() => onClose()} />
         </div>
       </div>
     </div>

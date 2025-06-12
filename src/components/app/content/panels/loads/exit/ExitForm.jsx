@@ -1,4 +1,3 @@
-import { CircleArrowOutUpRight, CirclePlus, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import useClientStore from "../../../../../../context/clientStore";
@@ -11,6 +10,7 @@ import {
   diffDays,
   getExpColor,
 } from "../../../../../../utils/dates-functions";
+import BrandedButton from "../../../../../utils/brandedButton/BrandedButton";
 import ConfirmPopUp from "../../../../../utils/ConfirmPopup";
 import "./ExitForm.css";
 const ExitForm = ({ onClose }) => {
@@ -19,6 +19,7 @@ const ExitForm = ({ onClose }) => {
   const [code, setCode] = useState("");
   const { currentUser } = useUserStore();
   const [isConfirmSeen, setConfirmSeen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleRemoveCycle = (id) => {
     if (id === "" || !id) return;
@@ -40,6 +41,7 @@ const ExitForm = ({ onClose }) => {
       return;
     }
 
+    setIsLoading(true);
     let cycle;
     try {
       cycle = await CycleManager.get(
@@ -68,6 +70,7 @@ const ExitForm = ({ onClose }) => {
 
     if (!cycle) {
       setCode("");
+      setIsLoading(false);
       return;
     }
 
@@ -94,6 +97,7 @@ const ExitForm = ({ onClose }) => {
 
     if (!load) {
       setCode("");
+      setIsLoading(false);
       return;
     }
     cycle.exp = load.exp;
@@ -105,8 +109,10 @@ const ExitForm = ({ onClose }) => {
     });
     setCycles((prevCycles) => [...prevCycles, cycle]);
     setCode("");
+    setIsLoading(false);
   };
   const handleExit = () => {
+    setIsLoading(true);
     const toastId = toast.loading("Creando Salida...");
     if (!cycles || cycles?.length === 0) {
       toast.update(toastId, {
@@ -126,6 +132,7 @@ const ExitForm = ({ onClose }) => {
           isLoading: false,
         });
         setCycles([]);
+        setIsLoading(false);
       })
       .catch((e) => {
         toast.update(toastId, {
@@ -135,6 +142,7 @@ const ExitForm = ({ onClose }) => {
           isLoading: false,
         });
         console.error(e);
+        setIsLoading(false);
       });
   };
   const handleClose = () => {
@@ -151,13 +159,13 @@ const ExitForm = ({ onClose }) => {
         <div className="formHeader">
           <h3>Salidas del Almacén</h3>
           <div className="buttonIconSection">
-            <div className="buttonIcon save" onClick={() => handleExit()}>
-              <CircleArrowOutUpRight color="white" size={20} />
-              <p>Generar Salida</p>
-            </div>
-            <div className="buttonIcon close" onClick={() => handleClose()}>
-              <X color="white" size={15} />
-            </div>
+            <BrandedButton
+              type="save"
+              label="Generar Salida"
+              isLoading={isLoading}
+              onClick={() => handleExit()}
+            />
+            <BrandedButton type="close" onClick={() => handleClose()} />
           </div>
         </div>
         <div className="formRow">
@@ -179,9 +187,11 @@ const ExitForm = ({ onClose }) => {
             />
           </div>
           <div className="formItem">
-            <div className="buttonIcon save" onClick={() => handleAddCycle()}>
-              <CirclePlus color="white" size={20} />
-            </div>
+            <BrandedButton
+              type="add"
+              isLoading={isLoading}
+              onClick={() => handleAddCycle()}
+            />
           </div>
         </div>
         <div className="formContent">
@@ -224,12 +234,11 @@ const ExitForm = ({ onClose }) => {
                         </td>
                         <td>
                           <span>
-                            <div
-                              className="buttonIcon delete"
+                            <BrandedButton
+                              type="delete"
+                              isLoading={isLoading}
                               onClick={() => handleRemoveCycle(cycle.id)}
-                            >
-                              <Trash2 color="white" size={20} />
-                            </div>
+                            />
                           </span>
                         </td>
                       </tr>

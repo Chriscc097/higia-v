@@ -1,8 +1,8 @@
 import { Timestamp } from "firebase/firestore";
-import { CircleCheck, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import FirebaseDataBase from "../../../../../firebase/FirebaseDatabase";
+import BrandedButton from "../../../../utils/brandedButton/BrandedButton";
 import { useUserStore } from "./../../../../../context/userStore";
 import {
   addTimeToDate,
@@ -17,6 +17,8 @@ const ActivationForm = ({ inputActivation, onClose }) => {
     ...inputActivation,
     active: inputActivation?.active || true,
   });
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = async (e) => {
     const { name, value } = e.target;
@@ -43,6 +45,7 @@ const ActivationForm = ({ inputActivation, onClose }) => {
   };
 
   const handleSubmit = () => {
+    setIsLoading(true);
     // Handle form submission
 
     if (
@@ -93,6 +96,7 @@ const ActivationForm = ({ inputActivation, onClose }) => {
           isLoading: false,
         });
       });
+    setIsLoading(false);
     onClose();
   };
 
@@ -102,9 +106,7 @@ const ActivationForm = ({ inputActivation, onClose }) => {
         <div className="formHeader">
           <h3>{activation?.id ? "Ver" : "Crea"} una Activación</h3>
           <div className="buttonIconSection">
-            <div className="buttonIcon close" onClick={() => onClose()}>
-              <X size={15} color="white" />
-            </div>
+            <BrandedButton type="close" onClick={() => onClose()} />
           </div>
         </div>
         <div className="formRow">
@@ -150,16 +152,20 @@ const ActivationForm = ({ inputActivation, onClose }) => {
         <div className="formHeader">
           <div className="buttonIconSection">
             {!activation?.exit && activation.id && (
-              <div className="buttonIcon unblock" onClick={() => handleSubmit()}>
-                <CircleCheck size={20} color="white" />
-                <p>Desactivar</p>
-              </div>
+              <BrandedButton
+                type="save"
+                label="Desactivar"
+                onClick={() => handleSubmit()}
+                isLoading={isLoading}
+              />
             )}
             {!activation?.id && (
-              <div className="buttonIcon save" onClick={() => handleSubmit()}>
-                <CircleCheck size={20} color="white" />
-                <p>Confirmar Activación</p>
-              </div>
+              <BrandedButton
+                isLoading={isLoading}
+                type="save"
+                label="Confirmar Activación"
+                onClick={() => handleSubmit()}
+              />
             )}
           </div>
         </div>

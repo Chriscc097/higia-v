@@ -1,7 +1,7 @@
-import { X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import FirebaseDataBase from "../../../../../firebase/FirebaseDatabase";
+import BrandedButton from "../../../../utils/brandedButton/BrandedButton";
 import ToggleButton from "../../../../utils/ToggleButton";
 import "./ProcessForm.css";
 
@@ -113,9 +113,7 @@ const ProcessForm = ({ process, onClose }) => {
           )}
         </form>
         <div className="closeButtonColumn">
-          <div className="buttonIcon close" onClick={() => onClose()}>
-            <X size={15} color="white" />
-          </div>
+          <BrandedButton type="close" onClick={() => onClose()} />
         </div>
       </div>
     </div>

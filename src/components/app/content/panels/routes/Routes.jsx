@@ -5,9 +5,10 @@ import {
   query,
   startAfter,
 } from "firebase/firestore";
-import { CirclePlus, Loader } from "lucide-react";
+import { CirclePlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { db } from "../../../../../firebase/FirebaseDatabase";
+import LoadingPanel from "../../../../utils/loadingPanel/LoadingPanel";
 import Process from "./Process";
 import RouteForm from "./RouteForm";
 import "./Routes.css";
@@ -121,7 +122,7 @@ const Routes = () => {
               })}
             </tbody>
           </table>
-          {loading && <div className="loading"><Loader size={20} color="#292F36" /><p>Cargando</p></div>}
+          {loading && <LoadingPanel/>}
         </div>
       </div>
       {selectedRoute && (

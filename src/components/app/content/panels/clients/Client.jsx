@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import useClientStore from "../../../../../context/clientStore";
 import "./Client.css";
 import ClientForm from "./ClientForm";
+import LoadingPanel from "../../../../utils/loadingPanel/LoadingPanel";
 
 const Client = () => {
   const [client, setClient] = useState(null); // Estado para el cliente seleccionado
@@ -85,10 +86,7 @@ const Client = () => {
             </tbody>
           </table>
           {loading && (
-            <div className="loading">
-              <Loader size={20} color="#292F36" />
-              <p>Cargando</p>
-            </div>
+            <LoadingPanel/>
           )}
         </div>
       </div>

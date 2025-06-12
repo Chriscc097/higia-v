@@ -164,108 +164,6 @@ button {
   z-index: 100;
 }
 
-.buttonIcon {
-  padding: 7px;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  height: fit-content;
-  width: fit-content;
-  background-color: blueviolet;
-  gap: 5px;
-  white-space: nowrap; 
-
-  img {
-    width: 15px;
-  }
-
-  p {
-    font-size: 11px;
-    color: white;
-  }
-
-  &.sync {
-    background-color: #00205b;
-    &:hover {
-      background-color: #006bb0;
-    }
-  }
-
-  &.merge {
-    &:hover {
-      background-color: #4f1c7b;
-    }
-  }
-  &.addIdentifier {
-    background-color: #50c878;
-    &:hover {
-      background-color: #309853;
-    }
-  }
-
-  &.saving {
-    background-color: white;
-    cursor: progress;
-  }
-
-  &.hideIdentifier {
-    background-color: #c9c9c9;
-    &:hover {
-      background-color: #969696;
-    }
-  }
-
-  &.delete {
-    background-color: #6c757d;
-    &:hover {
-      background-color: #e63946;
-    }
-    &.large {
-      img {
-        height: 20px;
-        width: 20px;
-      }
-    }
-  }
-
-  &.block {
-    background-color: #50c878;
-    &:hover {
-      background-color: #309853;
-    }
-  }
-  &.unblock {
-    background-color: #e63946;
-    &:hover {
-      background-color: #96232c;
-    }
-  }
-
-  &.save {
-    background-color: #50c878;
-    &:hover {
-      background-color: #309853;
-    }
-  }
-
-  &.send {
-    background-color: #00205b;
-    &:hover {
-      background-color: #50c878;
-    }
-  }
-
-  &.close {
-    background-color: #c9c9c9;
-    padding: 5px;
-    &:hover {
-      background-color: #969696;
-    }
-  }
-}
-
 .closeButtonColumn {
   padding-left: 30px;
   display: flex;
@@ -349,12 +247,6 @@ button {
   &.black {
     background-color: var(--color-erie-black);
   }
-}
-
-.loading {
-  display: flex;
-  flex-direction: row;
-  gap: 5px;
 }
 
 .icon {

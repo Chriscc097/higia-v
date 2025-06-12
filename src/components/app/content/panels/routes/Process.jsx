@@ -6,9 +6,11 @@ import {
   query,
   startAfter,
 } from "firebase/firestore";
-import { Check, CirclePlus, Loader, X } from "lucide-react";
+import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { db } from "../../../../../firebase/FirebaseDatabase";
+import BrandedButton from "../../../../utils/brandedButton/BrandedButton";
+import LoadingPanel from "../../../../utils/loadingPanel/LoadingPanel";
 import PageIndex from "../../../../utils/pageIndex/PageIndex";
 import "./Process.css";
 import ProcessForm from "./ProcessForm";
@@ -53,15 +55,13 @@ const Process = ({ onClose }) => {
           <h2 className="title">Procesos</h2>
           <div className="leftHeader">
             <div className="buttons">
-              <div className="imgbutton" onClick={() => setSelectedProcess({})}>
-                <CirclePlus size={20} color="white" />
-                <p>Nuevo Proceso</p>
-              </div>
+              <BrandedButton
+                type="add"
+                onClick={() => setSelectedProcess({})}
+              />
             </div>
             <div className="closeButtonColumn">
-              <div className="buttonIcon close" onClick={() => onClose()}>
-                <X size={15} color="white" />
-              </div>
+              <BrandedButton type="close" onClick={() => onClose()} />
             </div>
           </div>
         </div>
@@ -139,12 +139,7 @@ const Process = ({ onClose }) => {
                 })}
               </tbody>
             </table>
-            {loading && (
-              <div className="loading">
-                <Loader size={20} color="#292F36" />
-                <p>Cargando</p>
-              </div>
-            )}
+            {loading && <LoadingPanel />}
           </div>
           <PageIndex
             currentIndex={pageIndex}

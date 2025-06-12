@@ -8,20 +8,25 @@ import {
 import {
   CircleArrowOutUpRight,
   CircleCheckBig,
-  CircleOff,
+  CirclePlus,
   Package2,
   Package2Icon,
   Route,
+  ScanBarcode,
+  Trash2,
+  X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import "react-datepicker/dist/react-datepicker.css";
 import Select from "react-select";
 import { toast } from "react-toastify";
-import useClientStore from "../../../../../../context/clientStore";
-import { useUserStore } from "../../../../../../context/userStore";
-import FirebaseDataBase, {
-  db,
-} from "../../../../../../firebase/FirebaseDatabase";
-import FirebaseStorage from "../../../../../../firebase/FirebaseStorage";
+import useClientStore from "../../../../../context/clientStore";
+import FirebaseDataBase, { db } from "../../../../../firebase/FirebaseDatabase";
+import FirebaseStorage from "../../../../../firebase/FirebaseStorage";
+import { generateBarcodePDF } from "../../../../../utils/labels";
+import FileSelector from "../../../../utils/fileSelector/FileSelector";
+import FileViewer from "../../../../utils/fileSelector/FileViewer";
+import { useUserStore } from "./../../../../../context/userStore";
 import {
   addTimeToDate,
   dateToDDMMYYYY,
@@ -31,23 +36,18 @@ import {
   formatDateHour,
   getDayOfYear,
   getExpColor,
-} from "../../../../../../utils/dates-functions";
-import { generateBarcodePDF } from "../../../../../../utils/labels";
-import BrandedButton from "../../../../../utils/brandedButton/BrandedButton";
-import FileSelector from "../../../../../utils/fileSelector/FileSelector";
-import FileViewer from "../../../../../utils/fileSelector/FileViewer";
-import CancelForm from "./../cancel/CancelForm";
+} from "./../../../../../utils/dates-functions";
+import CancelForm from "./CancelForm";
 import "./LoadForm.css";
 
 const LoadForm = ({ onClose, load }) => {
   // Generalidades
-  const [isLoading, setIsLoading] = useState(false);
   const { currentUser } = useUserStore();
   const [loadData, setLoadData] = useState({
     ...load,
     status: load?.status || "Sin Iniciar",
-    date: load?.date || Timestamp.fromDate(new Date()),
-    days: load?.days || 1,
+    date: new Date(),
+    days: 1,
   });
 
   const clients = useClientStore((state) => state.clients);
@@ -189,7 +189,7 @@ const LoadForm = ({ onClose, load }) => {
     const q = query(
       stockRef,
       where("clientId", "==", clientId),
-      where("status", "==", "Consultorio")
+      where("status", "==", "Lonchera")
     );
     getDocs(q)
       .then((querySnapshot) => {
@@ -307,8 +307,6 @@ const LoadForm = ({ onClose, load }) => {
 
     await updateTimeLabels();
 
-    setIsLoading(true);
-
     let processError = false;
 
     for (let i = 0; i < loadData.route.process.length; i++) {
@@ -371,22 +369,17 @@ const LoadForm = ({ onClose, load }) => {
 
     if (!cycles || cycles?.length === 0) {
       toast.warn("No hay paquetes seleccionados");
-      setIsLoading(false);
       return;
     }
 
-    if (processError) {
-      setIsLoading(false);
-      return;
-    }
+    if (processError) return;
 
     // Crear carga
     const toastId = toast.loading("Creando carga...");
 
-    const lot = `${loadData.date
-      .toDate()
-      .getFullYear()
-      .toString()}L${getDayOfYear(loadData.date.toDate())
+    const lot = `${loadData.date.getFullYear().toString()}L${getDayOfYear(
+      loadData.date
+    )
       .toString()
       .padStart(3, "0")}`;
 
@@ -418,7 +411,6 @@ const LoadForm = ({ onClose, load }) => {
         isLoading: false,
         autoClose: 5000,
       });
-      setIsLoading(false);
       return;
     }
 
@@ -432,9 +424,9 @@ const LoadForm = ({ onClose, load }) => {
       cycles.forEach((cycle, index) => {
         //Update Stock
         const stockItem = {
+          uses: (cycle.use || 0) + 1,
           status: "Almacén",
           id: cycle.stockId,
-          uses: cycle.use + 1,
         };
         FirebaseDataBase.update("stock", stockItem);
 
@@ -460,30 +452,50 @@ const LoadForm = ({ onClose, load }) => {
       });
       console.error("Error creating load: ", error);
     }
-    setIsLoading(false);
   };
 
   const [confirmCancelationVisible, setConfirmCancelationVisible] =
     useState(false);
 
+  const cancelLoad = async (cancelInfo) => {
+    const toastId = toast.loading("Cancelando carga...");
+
+    try {
+      await FirebaseDataBase.update("loads", loadData.id, {
+        status: "Cancelada",
+        cancellation: cancelInfo,
+      });
+      toast.update(toastId, {
+        render: "Carga Cancelada",
+        type: "success",
+        isLoading: false,
+        autoClose: 5000,
+      });
+      onClose();
+    } catch (error) {
+      toast.update(toastId, {
+        render: "No se pudo cancelar la carga",
+        type: "error",
+        isLoading: false,
+        autoClose: 5000,
+      });
+      console.error("Error canceling load: ", error);
+    }
+  };
+
   const handleLabels = async () => {
     const newData = {
       ...loadData,
     };
-    setIsLoading(true);
     if (!newData.labels) {
       const idToast = toast.loading("Creando etiquetas...");
       const labels = cycles.map((cycle) => {
-        const clientItem = clients.find(
-          (client) => client.id === cycle?.clientId
-        );
         return {
-          client: clientItem.prefix + clientItem.businessName,
-          package: cycle.name,
+          title: cycle.name,
           code: cycle.id,
-          footer: `${formatDateHour(
-            newData.date.toDate()
-          )}   EXP:${dateToYYYYMMDD(newData.exp?.toDate())} Uso #${cycle.use}`,
+          footer: `F:${formatDateHour(newData.date)} V:${dateToYYYYMMDD(
+            newData.exp?.toDate()
+          )} Uso #${cycle.use}`,
         };
       });
 
@@ -507,12 +519,10 @@ const LoadForm = ({ onClose, load }) => {
           autoClose: 5000,
         });
         console.error(e);
-        setIsLoading(false);
         return;
       }
     }
     window.open(newData.labels).focus();
-    setIsLoading(false);
   };
 
   const getMenuIcon = (option) => {
@@ -521,9 +531,6 @@ const LoadForm = ({ onClose, load }) => {
       return <Package2Icon color="#292F36" size={20} />;
     if (option.label === "Controles")
       return <CircleCheckBig color="#292F36" size={20} />;
-    if (option.label === "Cancelación") {
-      return <CircleOff color="#292F36" size={20} />;
-    }
   };
 
   const getAviableStock = () => {
@@ -563,18 +570,15 @@ const LoadForm = ({ onClose, load }) => {
   };
 
   const createControl = async () => {
-    setIsLoading(true);
     console.log("control", newControl);
     if (!loadData.id) {
       toast.warn("No se puede crear el control, crea primero la carga");
-      setIsLoading(false);
       return;
     }
     if (!newControl.startDate) {
       toast.warn(
         "No se puede crear el control, selecciona una fecha de inicio"
       );
-      setIsLoading(false);
       return;
     }
 
@@ -582,31 +586,26 @@ const LoadForm = ({ onClose, load }) => {
       toast.warn(
         "No se puede crear el control, selecciona una fecha de finalización"
       );
-      setIsLoading(false);
       return;
     }
 
     if (!newControl.method || newControl.method === "") {
       toast.warn("No se puede crear el control, Selecciona un método");
-      setIsLoading(false);
       return;
     }
 
     if (!newControl.result || newControl.result === "") {
       toast.warn("No se puede crear el control, Escribe un resultado");
-      setIsLoading(false);
       return;
     }
 
     if (!newControl.interpretation || newControl.interpretation === "") {
       toast.warn("No se puede crear el control, escribe una interpretación");
-      setIsLoading(false);
       return;
     }
 
     if (!newControl.recomendations || newControl.recomendations === "") {
       toast.warn("No se puede crear el control, escribe una recomendación");
-      setIsLoading(false);
       return;
     }
 
@@ -614,7 +613,6 @@ const LoadForm = ({ onClose, load }) => {
       toast.warn(
         "No se puede crear el control, adjunta al menos una evidencia"
       );
-      setIsLoading(false);
       return;
     }
 
@@ -668,22 +666,7 @@ const LoadForm = ({ onClose, load }) => {
       });
       console.error("Error creating load: ", error);
     }
-    setIsLoading(false);
   };
-
-  const filteredMenuOptions = menuOptions.filter((option) => {
-    if (loadData.status === "Sin Iniciar") {
-      return option.label === "Paquetes" || option.label === "Ruta";
-    }
-    if (loadData.status === "En Curso" || loadData.status === "Terminada") {
-      return (
-        option.label === "Paquetes" ||
-        option.label === "Ruta" ||
-        option.label === "Controles"
-      );
-    }
-    return true;
-  });
 
   return (
     <div className="formContainer">
@@ -692,31 +675,34 @@ const LoadForm = ({ onClose, load }) => {
           <h3>{loadData?.id ? "Carga #" + loadData.id : "Nueva Carga"}</h3>
           <div className="buttonIconSection">
             {!loadData?.id ? (
-              <BrandedButton
-                isLoading={isLoading}
-                label={"Crear Carga"}
-                type="save"
-                onClick={() => createLoad()}
-              />
+              <div className="buttonIcon save" onClick={() => createLoad()}>
+                <CirclePlus size={20} color="white" />
+                <p>Crear Carga</p>
+              </div>
             ) : (
               !loadData.cancellation && (
                 <>
-                  <BrandedButton
-                    label={"Cancelar Carga"}
-                    type="cancel"
+                  <div
+                    className="buttonIcon unblock"
                     onClick={() => setConfirmCancelationVisible(true)}
-                  />
-                  <BrandedButton
-                    isLoading={isLoading}
-                    label={"Ver Rótulos"}
-                    type="print"
-                    onClick={() => handleLabels(true)}
-                  />
+                  >
+                    <Trash2 color="white" size={20} />
+                    <p>Cancelar Carga</p>
+                  </div>
+                  <div
+                    className="buttonIcon sync"
+                    onClick={() => handleLabels()}
+                  >
+                    <ScanBarcode color="white" size={20} />
+                    <p>Imprimir Rótulos</p>
+                  </div>
                 </>
               )
             )}
 
-            <BrandedButton type="close" onClick={() => onClose()} />
+            <div className="buttonIcon close" onClick={() => onClose()}>
+              <X size={15} color="white" />
+            </div>
           </div>
         </div>
         <div className="formRow">
@@ -728,9 +714,7 @@ const LoadForm = ({ onClose, load }) => {
                   ? "status-badge out"
                   : loadData.status === "En Curso"
                   ? "status-badge in"
-                  : loadData.status === "Terminada"
-                  ? "status-badge active"
-                  : "status-badge inactive"
+                  : "status-badge active"
               }
             >
               {loadData.status}
@@ -742,7 +726,7 @@ const LoadForm = ({ onClose, load }) => {
               disabled={loadData.id}
               name="date"
               type="datetime-local"
-              value={formatDateHour(loadData.date.toDate())}
+              value={formatDateHour(loadData.date || new Date())}
               onChange={handleChangeLoadInfo}
             />
           </div>
@@ -763,9 +747,7 @@ const LoadForm = ({ onClose, load }) => {
                   "expColor " + getExpColor(diffDays(loadData?.exp?.toDate()))
                 }
               >
-                {diffDays(loadData.exp?.toDate()) > 0
-                  ? diffDays(loadData.exp?.toDate())
-                  : "Vencido"}
+                {diffDays(loadData.exp?.toDate())}
               </div>
             )}
           </div>
@@ -779,8 +761,10 @@ const LoadForm = ({ onClose, load }) => {
             <h5>Paquetes</h5>
             <p>
               {loadData?.id
-                ? `${loadData.cycles.remaining}/${loadData.cycles.total}`
-                : cycles.length}
+                ? cycles.filter((pkg) => !pkg.exited).length +
+                  "/" +
+                  cycles?.length
+                : cycles?.length}
             </p>
           </div>
           {loadData?.id && (
@@ -790,30 +774,8 @@ const LoadForm = ({ onClose, load }) => {
             </div>
           )}
         </div>
-        {loadData?.cancellation && (
-          <div className="formRow red">
-            <div className="formItem">
-              <h5>Fecha de Cancelación</h5>
-              <p>
-                {formatDateHour(loadData?.cancellation?.timestamp.toDate())}
-              </p>
-            </div>
-            <div className="formItem">
-              <h5>Responsable</h5>
-              <p>{loadData?.cancellation?.user?.username}</p>
-            </div>
-            <div className="formItem">
-              <h5>Motivo</h5>
-              <p>{loadData?.cancellation?.type}</p>
-            </div>
-            <div className="formItem">
-              <h5>Observaciones</h5>
-              <p>{loadData?.cancellation?.comments}</p>
-            </div>
-          </div>
-        )}
         <div className="formMenu">
-          {filteredMenuOptions.map((option, index) => (
+          {menuOptions.map((option, index) => (
             <div
               className={
                 "formMenuItem" + (option.isSelected ? " selected" : "")
@@ -1036,7 +998,7 @@ const LoadForm = ({ onClose, load }) => {
                           value: client.id,
                           label: client.businessName,
                         }))}
-                        placeholder="Odontólogo"
+                        placeholder="Lonchera"
                       />
                     </div>
                     <div className="formItem">
@@ -1066,7 +1028,7 @@ const LoadForm = ({ onClose, load }) => {
                     <thead>
                       <tr>
                         <th>Ciclo</th>
-                        <th>Odontólogo</th>
+                        <th>Profesional</th>
                         <th>Paquete</th>
                         <th>Usos</th>
                         <th></th>
@@ -1086,10 +1048,12 @@ const LoadForm = ({ onClose, load }) => {
                             <td>
                               {!loadData?.id ? (
                                 <span>
-                                  <BrandedButton
-                                    type="delete"
+                                  <div
+                                    className="buttonIcon delete"
                                     onClick={() => handleRemovePackage(cycle)}
-                                  />
+                                  >
+                                    <Trash2 color="white" size={20} />
+                                  </div>
                                 </span>
                               ) : (
                                 <span>
@@ -1117,140 +1081,133 @@ const LoadForm = ({ onClose, load }) => {
           )}
           {menuOptions[2].isSelected && (
             <>
-              {!loadData.cancellation && (
-                <>
-                  <div className="formRow">
-                    <div className="formItem">
-                      <h5>Método</h5>
-                      <Select
-                        className="selector"
-                        name="method"
-                        onChange={(e) => {
-                          handleControlInfoChange({
-                            method: e.label,
-                            description: e.value,
-                          });
-                        }}
-                        options={getMethods()}
-                        placeholder="Selecciona un Método"
-                      />
-                    </div>
-                    <div className="formItem">
-                      <h5>Descripción</h5>
-                      <p>{newControl?.description || "Selecciona un método"}</p>
-                    </div>
-                    <div className="buttonIconSection">
-                      <BrandedButton
-                        isLoading={isLoading}
-                        type="save"
-                        onClick={() => createControl()}
-                        label="Agregar Control"
-                      />
-                    </div>
+              <div className="formRow">
+                <div className="formItem">
+                  <h5>Método</h5>
+                  <Select
+                    className="selector"
+                    name="method"
+                    onChange={(e) => {
+                      handleControlInfoChange({
+                        method: e.label,
+                        description: e.value,
+                      });
+                    }}
+                    options={getMethods()}
+                    placeholder="Selecciona un Método"
+                  />
+                </div>
+                <div className="formItem">
+                  <h5>Descripción</h5>
+                  <p>{newControl?.description || "Selecciona un método"}</p>
+                </div>
+                <div className="buttonIconSection">
+                  <div
+                    className="buttonIcon save"
+                    onClick={() => createControl()}
+                  >
+                    <CirclePlus size={20} color="white" />
+                    <p>Agregar Control</p>
                   </div>
-                  <div className="formRow">
-                    <div className="formItem">
-                      <h5>Fecha de Inicio</h5>
-                      <input
-                        value={formatDateHour(newControl?.startDate?.toDate())}
-                        className="largeInput"
-                        type="datetime-local"
-                        name="startDate"
-                        onChange={(e) =>
-                          handleControlInfoChange({
-                            startDate: Timestamp.fromDate(
-                              new Date(e.target.value)
-                            ),
-                          })
-                        }
-                      />
-                    </div>
-                    <div className="formItem">
-                      <h5>Fecha de Finalización</h5>
-                      <input
-                        value={formatDateHour(newControl?.endDate?.toDate())}
-                        className="largeInput"
-                        type="datetime-local"
-                        name="endDate"
-                        onChange={(e) =>
-                          handleControlInfoChange({
-                            endDate: Timestamp.fromDate(
-                              new Date(e.target.value)
-                            ),
-                          })
-                        }
-                      />
-                    </div>
-                    <div className="formItem">
-                      <h5>Resultado</h5>
-                      <input
-                        value={newControl?.result || ""}
-                        className="largeInput"
-                        type="text"
-                        name="result"
-                        onChange={(e) =>
-                          handleControlInfoChange({
-                            [e.target.name]: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                    <div className="formItem">
-                      <h5>Inventario</h5>
-                      <input
-                        value={newControl?.stock || ""}
-                        className="largeInput"
-                        type="text"
-                        name="stock"
-                        onChange={(e) =>
-                          handleControlInfoChange({
-                            [e.target.name]: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="formRow">
-                    <div className="formItem long">
-                      <h5>Interpretación</h5>
-                      <input
-                        value={newControl?.interpretation || ""}
-                        className="largeInput"
-                        type="text"
-                        name="interpretation"
-                        onChange={(e) =>
-                          handleControlInfoChange({
-                            [e.target.name]: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                    <div className="formItem long">
-                      <h5>Recomendaciones</h5>
-                      <input
-                        value={newControl?.recomendations || ""}
-                        className="largeInput"
-                        type="text"
-                        name="recomendations"
-                        onChange={(e) =>
-                          handleControlInfoChange({
-                            [e.target.name]: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                    <div className="formItem">
-                      <h5>Adjuntos</h5>
-                      <FileSelector
-                        onFilesSelected={(e) => {
-                          newControl.attachments = e;
-                        }}
-                        inputFiles={newControl?.attachments}
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
+                </div>
+              </div>
+              <div className="formRow">
+                <div className="formItem">
+                  <h5>Fecha de Inicio</h5>
+                  <input
+                    value={formatDateHour(newControl?.startDate?.toDate())}
+                    className="largeInput"
+                    type="datetime-local"
+                    name="startDate"
+                    onChange={(e) =>
+                      handleControlInfoChange({
+                        startDate: Timestamp.fromDate(new Date(e.target.value)),
+                      })
+                    }
+                  />
+                </div>
+                <div className="formItem">
+                  <h5>Fecha de Finalización</h5>
+                  <input
+                    value={formatDateHour(newControl?.endDate?.toDate())}
+                    className="largeInput"
+                    type="datetime-local"
+                    name="endDate"
+                    onChange={(e) =>
+                      handleControlInfoChange({
+                        endDate: Timestamp.fromDate(new Date(e.target.value)),
+                      })
+                    }
+                  />
+                </div>
+                <div className="formItem">
+                  <h5>Resultado</h5>
+                  <input
+                    value={newControl?.result || ""}
+                    className="largeInput"
+                    type="text"
+                    name="result"
+                    onChange={(e) =>
+                      handleControlInfoChange({
+                        [e.target.name]: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className="formItem">
+                  <h5>Inventario</h5>
+                  <input
+                    value={newControl?.stock || ""}
+                    className="largeInput"
+                    type="text"
+                    name="stock"
+                    onChange={(e) =>
+                      handleControlInfoChange({
+                        [e.target.name]: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+              <div className="formRow">
+                <div className="formItem long">
+                  <h5>Interpretación</h5>
+                  <input
+                    value={newControl?.interpretation || ""}
+                    className="largeInput"
+                    type="text"
+                    name="interpretation"
+                    onChange={(e) =>
+                      handleControlInfoChange({
+                        [e.target.name]: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className="formItem long">
+                  <h5>Recomendaciones</h5>
+                  <input
+                    value={newControl?.recomendations || ""}
+                    className="largeInput"
+                    type="text"
+                    name="recomendations"
+                    onChange={(e) =>
+                      handleControlInfoChange({
+                        [e.target.name]: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className="formItem">
+                  <h5>Adjuntos</h5>
+                  <FileSelector
+                    onFilesSelected={(e) => {
+                      newControl.attachments = e;
+                    }}
+                    inputFiles={newControl?.attachments}
+                  />
+                </div>
+              </div>
               <div className="formTable">
                 <div className="table-container">
                   <table className="custom-table">
@@ -1267,7 +1224,7 @@ const LoadForm = ({ onClose, load }) => {
                         return (
                           <tr key={index}>
                             <td>
-                              {formatDateHour(control?.startDate?.toDate())}
+                              {formatDateHour(control.startDate.toDate())}
                             </td>
                             <td>{control.method}</td>
                             <td>{control.result}</td>
@@ -1287,7 +1244,7 @@ const LoadForm = ({ onClose, load }) => {
       </div>
       {confirmCancelationVisible && (
         <CancelForm
-          onSummit={(load) => setLoadData(load)}
+          onSummit={(cancelInfo) => cancelLoad(cancelInfo)}
           onClose={() => setConfirmCancelationVisible(false)}
           load={loadData}
         />

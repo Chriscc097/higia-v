@@ -1,13 +1,13 @@
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
-import { CirclePlus, Loader, Save, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { toast } from "react-toastify";
 import FirebaseDataBase, { db } from "../../../../../firebase/FirebaseDatabase";
+import BrandedButton from "../../../../utils/brandedButton/BrandedButton";
+import LoadingPanel from "../../../../utils/loadingPanel/LoadingPanel";
 import { useUserStore } from "./../../../../../context/userStore";
 import ProcessForm from "./ProcessForm";
 import "./RouteForm.css";
-
 
 const RouteForm = ({ route, onClose }) => {
   const [routeData, setRouteData] = useState({ ...route });
@@ -30,7 +30,7 @@ const RouteForm = ({ route, onClose }) => {
   const handleAddProcess = (e) => {
     const processId = e.value;
     const routeProcess = routeData.process || [];
-    if(routeProcess.length === 0){
+    if (routeProcess.length === 0) {
       routeProcess.push("mArvk9CJCrs94Eu19Tcc");
     }
     if (routeProcess.some((processItem) => processItem.id === processId)) {
@@ -78,7 +78,9 @@ const RouteForm = ({ route, onClose }) => {
           });
           console.error(error);
         })
-        .finally(() => setLoading(false));
+        .finally(() => {
+          setLoading(false);
+        });
     } else {
       FirebaseDataBase.save("routes", routeData)
         .then(() => {
@@ -122,12 +124,8 @@ const RouteForm = ({ route, onClose }) => {
         <div className="formHeader">
           <h3>{route?.id ? "Editar Ruta" : "Crea una Ruta"}</h3>
           <div className="buttonIconSection">
-            <div className="buttonIcon save" onClick={() => saveRoute()}>
-              <Save size={20} color="white" />
-            </div>
-            <div className="buttonIcon close" onClick={() => onClose()}>
-              <X size={15} color="white"/>
-            </div>
+            <BrandedButton type="add" onClick={() => saveRoute()} isLoading={loading}/>
+            <BrandedButton type="close" onClick={() => onClose()} />
           </div>
         </div>
         <div className="formContent">
@@ -165,12 +163,12 @@ const RouteForm = ({ route, onClose }) => {
                 placeholder="Proceso"
               />
             </div>
-            <div
-              className="buttonIcon save"
+            <BrandedButton
+              type="save"
+              isLoading={loading}
               onClick={() => setProcessFormVisible(true)}
-            >
-              <CirclePlus size={20} color="white" />
-            </div>
+              label="Agregar Control"
+            />
             <div className="formItem long">
               <h4>Usuario</h4>
               <p>{currentUser.username}</p>
@@ -204,12 +202,11 @@ const RouteForm = ({ route, onClose }) => {
                           <td>{pr?.content}</td>
                           <td>
                             <span>
-                              <div
-                                className="buttonIcon delete"
+                              <BrandedButton
+                                type="delete"
+                                isLoading={loading}
                                 onClick={() => handleremoveProcess(processItem)}
-                              >
-                                <Trash2 size={20} color="white" />
-                              </div>
+                              />
                             </span>
                           </td>
                         </tr>
@@ -217,7 +214,7 @@ const RouteForm = ({ route, onClose }) => {
                     })}
                 </tbody>
               </table>
-              {loading && <div className="loading"><Loader size={20} color="#292F36" /><p>Cargando</p></div>}
+              {loading && <LoadingPanel />}
             </div>
           </div>
         </div>

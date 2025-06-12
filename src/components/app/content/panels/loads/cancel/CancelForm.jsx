@@ -1,5 +1,4 @@
 import { Timestamp } from "firebase/firestore";
-import { Trash2, X } from "lucide-react";
 import { useState } from "react";
 import Select from "react-select";
 import { toast } from "react-toastify";
@@ -7,9 +6,11 @@ import { useUserStore } from "../../../../../../context/userStore";
 import { CycleManager } from "../../../../../../model/CycleManager";
 import { ExitManager } from "../../../../../../model/ExitManager";
 import { LoadManager } from "../../../../../../model/LoadManager";
+import BrandedButton from "../../../../../utils/brandedButton/BrandedButton";
 import "./CancelForm.css";
 
 const CancelForm = ({ onSummit, onClose, load }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [cancellation, setCancellation] = useState({});
   const { currentUser } = useUserStore();
 
@@ -41,6 +42,8 @@ const CancelForm = ({ onSummit, onClose, load }) => {
       toast.warn("Selecciona debes escribir un comentario u observación");
       return;
     }
+
+    setIsLoading(true);
 
     const cycles = await CycleManager.getByLoad(load.id);
 
@@ -77,6 +80,7 @@ const CancelForm = ({ onSummit, onClose, load }) => {
           isLoading: false,
           autoClose: 5000,
         });
+        setIsLoading(false);
         return;
       }
 
@@ -86,6 +90,7 @@ const CancelForm = ({ onSummit, onClose, load }) => {
         isLoading: false,
         autoClose: 5000,
       });
+      setIsLoading(false);
       onSummit(load);
       onClose();
     } catch (error) {
@@ -104,9 +109,7 @@ const CancelForm = ({ onSummit, onClose, load }) => {
         <div className="formHeader">
           <h3>{"Cancelación Carga #" + load.id}</h3>
           <div className="buttonIconSection">
-            <div className="buttonIcon close" onClick={() => onClose()}>
-              <X size={15} color="white" />
-            </div>
+            <BrandedButton type="close" onClick={() => onClose()} />
           </div>
         </div>
         <div className="formRow">
@@ -143,13 +146,12 @@ const CancelForm = ({ onSummit, onClose, load }) => {
         </div>
         <div className="formHeader">
           <div className="buttonIconSection">
-            <div
-              className="buttonIcon unblock"
+            <BrandedButton
+              label="Confirmar Cancelación"
+              type="cancel"
+              isLoading={isLoading}
               onClick={() => createCancellation()}
-            >
-              <Trash2 size={20} color="white" />
-              <p>Confirmar cancelación</p>
-            </div>
+            />
           </div>
         </div>
       </div>

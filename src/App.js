@@ -1,11 +1,11 @@
 import { onAuthStateChanged } from "firebase/auth";
-import { Loader } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import "./App.css";
 import Content from "./components/app/content/main/Content";
 import Menu from "./components/app/menu/Menu";
 import LogIn from "./components/auth/LogIn";
+import LoadingPanel from "./components/utils/loadingPanel/LoadingPanel";
 import Notification from "./components/utils/Notification";
 import useClientStore from "./context/clientStore";
 import { useUserStore } from "./context/userStore";
@@ -55,10 +55,7 @@ export default function App() {
 
   if (isLoading) {
     return (
-      <div className="loading">
-        <Loader size={20} color="#292F36" />
-        <p>Cargando</p>
-      </div>
+      <LoadingPanel />
     );
   }
 

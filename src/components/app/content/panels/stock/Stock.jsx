@@ -7,12 +7,13 @@ import {
   startAfter,
   where,
 } from "firebase/firestore";
-import { CirclePlus, Loader } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import useClientStore from "../../../../../context/clientStore";
 import FirebaseDataBase, { db } from "../../../../../firebase/FirebaseDatabase";
 import { dateToYYYYMMDD } from "../../../../../utils/dates-functions";
+import BrandedButton from "../../../../utils/brandedButton/BrandedButton";
 import ConfirmPopup from "../../../../utils/ConfirmPopup";
+import LoadingPanel from "../../../../utils/loadingPanel/LoadingPanel";
 import { useUserStore } from "./../../../../../context/userStore";
 import "./Stock.css";
 import StockForm from "./StockForm";
@@ -50,7 +51,7 @@ const Stock = ({ client }) => {
     const stockCollection = collection(db, "stock");
     const orderStock = orderBy("number", "desc");
     const limitstock = limit(20);
-    const whereClient = where("clientId", "==", client.id);
+    const whereClient = where("clientId", "==", client?.id);
     let q;
 
     if (initial) {
@@ -183,13 +184,11 @@ const Stock = ({ client }) => {
       <div className="header">
         <h3 className="title">Inventario</h3>
         <div className="leftHeader">
-          <div
-            className="buttonIcon save"
+          <BrandedButton
+            type="save"
             onClick={() => setStockFormVisible(true)}
-          >
-            <CirclePlus size={20} color="white" />
-            <p>Nuevo Material</p>
-          </div>
+            label="Nuevo Material"
+          />
         </div>
       </div>
       <div className="content">
@@ -223,7 +222,7 @@ const Stock = ({ client }) => {
                     </div>
                   </div>
 
-                  {stockTablevisible[client.id + "-" + pk.id] && (
+                  {stockTablevisible[client?.id + "-" + pk.id] && (
                     <div className="table-container">
                       <table className="custom-table">
                         <thead>
@@ -286,12 +285,7 @@ const Stock = ({ client }) => {
                           )}
                         </tbody>
                       </table>
-                      {loading && (
-                        <div className="loading">
-                          <Loader size={20} color="#292F36" />
-                          <p>Cargando</p>
-                        </div>
-                      )}
+                      {loading && <LoadingPanel />}
                     </div>
                   )}
                 </div>

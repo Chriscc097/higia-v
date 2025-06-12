@@ -1,10 +1,10 @@
 import { collection, onSnapshot } from "firebase/firestore";
-import { CirclePlus, Save, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { toast } from "react-toastify"; // Adjust the import according to your firebase configuration
 import FirebaseDataBase, { db } from "../../../../../firebase/FirebaseDatabase";
 import { dateToYYYYMMDD } from "../../../../../utils/dates-functions";
+import BrandedButton from "../../../../utils/brandedButton/BrandedButton";
 import { useUserStore } from "./../../../../../context/userStore";
 import PackageForm from "./PackageForm";
 import "./StockForm.css";
@@ -104,7 +104,7 @@ const StockForm = ({ onClose }) => {
     const quantity = stock.quantity;
 
     await FirebaseDataBase.update("packages", {
-      count: (quantity + count),
+      count: quantity + count,
       id: stock.package.id,
     });
 
@@ -116,7 +116,7 @@ const StockForm = ({ onClose }) => {
     for (let i = 1; i <= quantity; i++) {
       const newStockItem = {
         ...stock,
-        number : count,
+        number: count,
         id: `${stock.package.id}-${count}`,
       };
       newStock.push(newStockItem);
@@ -129,7 +129,7 @@ const StockForm = ({ onClose }) => {
 
     toast.success("Material guardado correctamente");
     onClose();
-  }; 
+  };
 
   return (
     <div className="formContainer">
@@ -137,13 +137,8 @@ const StockForm = ({ onClose }) => {
         <div className="formHeader">
           <h3>Nuevo Material</h3>
           <div className="buttonIconSection">
-            <div className="buttonIcon save" onClick={() => saveStock()}>
-              <Save size={20} color="white" />
-              <p>Agregar Material</p>
-            </div>
-            <div className="buttonIcon close" onClick={() => onClose()}>
-              <X size={15} color="white"/>
-            </div>
+            <BrandedButton type="add" onClick={() => saveStock()} />
+            <BrandedButton type="close" onClick={() => onClose()} />
           </div>
         </div>
         <div className="formContent">
@@ -159,12 +154,10 @@ const StockForm = ({ onClose }) => {
                 placeholder="Material"
               />
             </div>
-            <div
-              className="buttonIcon save"
+            <BrandedButton
+              type="save"
               onClick={() => setPackageFormSeen(true)}
-            >
-              <CirclePlus size={20} color="white" />
-            </div>
+            />
             <div className="formItem">
               <Select
                 className="selector"

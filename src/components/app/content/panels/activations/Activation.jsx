@@ -6,12 +6,13 @@ import {
   query,
   startAfter,
 } from "firebase/firestore";
-import { CirclePlus, Loader, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import FirebaseDataBase, { db } from "../../../../../firebase/FirebaseDatabase";
 import { dateToYYYYMMDD } from "../../../../../utils/dates-functions";
+import BrandedButton from "../../../../utils/brandedButton/BrandedButton";
 import ConfirmPopup from "../../../../utils/ConfirmPopup";
+import LoadingPanel from "../../../../utils/loadingPanel/LoadingPanel";
 import PageIndex from "../../../../utils/pageIndex/PageIndex";
 import { useUserStore } from "./../../../../../context/userStore";
 import "./Activation.css";
@@ -24,11 +25,12 @@ const Activation = ({ onClose }) => {
   const [activations, setActivations] = useState([]);
   const [confirmUnactivation, setConfirmUnactivation] = useState(null);
 
-  
   const [pageIndex, setPageIndex] = useState(1);
   const [pageLength, setPageLength] = useState(20);
   const [hasMore, setHasMore] = useState(true);
   const [lastDoc, setLastDoc] = useState(null);
+
+  const [isLoadingUnactivation, setIsloadingUnactivation] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -55,6 +57,7 @@ const Activation = ({ onClose }) => {
   }, [pageIndex]);
 
   const unActiveStock = async () => {
+    setIsloadingUnactivation(true);
     const toastId = toast.loading("Inactivando...");
     let activationItem = { ...confirmUnactivation, active: false };
     activationItem.exit = {
@@ -83,6 +86,7 @@ const Activation = ({ onClose }) => {
         });
       });
     setConfirmUnactivation(null);
+    setIsloadingUnactivation(false);
   };
 
   return (
@@ -92,22 +96,17 @@ const Activation = ({ onClose }) => {
           <h2>Activaciones</h2>
           <div className="leftHeader">
             <div className="buttons">
-              <div
-                className="imgbutton"
+              <BrandedButton
+                type="add"
+                label="Nueva Activación"
                 onClick={() => setSelectedActivation({})}
-              >
-                <CirclePlus size={20} color="white"/>
-                <p>Nueva Activación</p>
-              </div>
-            </div>
-            <div className="closeButtonColumn">
-              <div className="buttonIcon close" onClick={() => onClose()}>
-                <X size={15} color="white"/>
-              </div>
+              />
+              <BrandedButton type="close" onClick={() => onClose()} />
             </div>
           </div>
         </div>
         <div className="content">
+          {loading && <LoadingPanel />}
           <div className="table-container">
             <table className="custom-table">
               <thead>
@@ -158,14 +157,13 @@ const Activation = ({ onClose }) => {
                       <td>
                         {!activationItem.exit && (
                           <span>
-                            <div
-                              className="buttonIcon delete"
+                            <BrandedButton
+                              type="delete"
+                              isLoading={isLoadingUnactivation}
                               onClick={() =>
                                 setConfirmUnactivation(activationItem)
                               }
-                            >
-                              <Trash2 size={20} color="white"/>
-                            </div>
+                            />
                           </span>
                         )}
                       </td>
@@ -174,12 +172,6 @@ const Activation = ({ onClose }) => {
                 })}
               </tbody>
             </table>
-            {loading && (
-              <div className="loading">
-                <Loader size={20} color="#292F36" />
-                <p>Cargando</p>
-              </div>
-            )}
           </div>
           <PageIndex
             currentIndex={pageIndex}

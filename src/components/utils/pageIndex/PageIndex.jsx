@@ -1,8 +1,8 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import BrandedButton from "../brandedButton/BrandedButton";
 import "./PageIndex.css";
 
-const PageIndex = ({ currentIndex, onChange, hasMore }) => {
+const PageIndex = ({ currentIndex, onChange, hasMore, isLoading }) => {
   const [index, setIndex] = useState(currentIndex);
 
   const handleChangeIndex = (newIndex) => {
@@ -36,9 +36,11 @@ const PageIndex = ({ currentIndex, onChange, hasMore }) => {
     <div className="pageIndexContainer">
       <div className="pageIndex">
         {index > 1 && (
-          <div className="buttonIcon close" onClick={substractIndex}>
-            <ChevronLeft size={20} color="white" />
-          </div>
+          <BrandedButton
+            type="left"
+            onClick={substractIndex}
+            isLoading={isLoading}
+          />
         )}
         <input
           type="number"
@@ -47,9 +49,11 @@ const PageIndex = ({ currentIndex, onChange, hasMore }) => {
           value={index}
         />
         {!hasMore && (
-          <div className="buttonIcon close" onClick={addIndex}>
-            <ChevronRight size={20} color="white" />
-          </div>
+          <BrandedButton
+            type="right"
+            onClick={addIndex}
+            isLoading={isLoading}
+          />
         )}
       </div>
     </div>

@@ -1,12 +1,13 @@
-import { Save, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import FirebaseDataBase from "../../../../../firebase/FirebaseDatabase";
+import BrandedButton from "../../../../utils/brandedButton/BrandedButton";
 import ToggleButton from "../../../../utils/ToggleButton";
 import Stock from "../stock/Stock";
 import "./ClientForm.css";
 
 const ClientForm = ({ client, onClose }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     businessName: client?.businessName || "",
     nit: client?.nit || "",
@@ -27,6 +28,7 @@ const ClientForm = ({ client, onClose }) => {
   };
 
   const handleSubmit = () => {
+    setIsLoading(true);
     // Handle form submission
     if (
       !formData.businessName ||
@@ -39,11 +41,12 @@ const ClientForm = ({ client, onClose }) => {
       toast.warn("Todos los campos son obligatorios");
       return;
     }
-    if (formData.id) {
+    if (formData?.id) {
       FirebaseDataBase.update("clients", formData);
     } else {
       FirebaseDataBase.save("clients", formData);
     }
+    setIsLoading(false);
     onClose();
   };
 
@@ -53,13 +56,13 @@ const ClientForm = ({ client, onClose }) => {
         <div className="formHeader">
           <h3>Datos del Odontólogo</h3>
           <div className="buttonIconSection">
-            <div className="buttonIcon save" onClick={() => handleSubmit()}>
-              <Save size={20} color="white" />
-              <p>Guardar</p>
-            </div>
-            <div className="buttonIcon close" onClick={() => onClose()}>
-              <X size={15} color="white" />
-            </div>
+            <BrandedButton
+              type="save"
+              label="Guardar"
+              isLoading={isLoading}
+              onClick={() => handleSubmit()}
+            />
+            <BrandedButton type="close" onClick={() => onClose()} />
           </div>
         </div>
 
@@ -138,9 +141,7 @@ const ClientForm = ({ client, onClose }) => {
           </div>
         </div>
 
-        <div className="content">
-          <Stock client={client} />
-        </div>
+        <div className="content">{client?.id && <Stock client={client} />}</div>
       </div>
     </div>
   );

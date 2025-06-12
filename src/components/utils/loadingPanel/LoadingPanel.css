@@ -1,0 +1,38 @@
+.loaderContanier {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 0.5);
+  &.true{
+    background-color: transparent;
+  }
+  cursor: not-allowed;
+}
+
+.loaderContent {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 100%;
+  gap: 7px;
+  p {
+    color: #292f36;
+  }
+}
+
+.animatedIcon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
