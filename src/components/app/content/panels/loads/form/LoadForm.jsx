@@ -42,6 +42,7 @@ import "./LoadForm.css";
 const LoadForm = ({ onClose, load }) => {
   // Generalidades
   const [isLoading, setIsLoading] = useState(false);
+  const [quantityStock, setQuantityStock]= useState(1);
   const { currentUser } = useUserStore();
   const [loadData, setLoadData] = useState({
     ...load,
@@ -166,8 +167,8 @@ const LoadForm = ({ onClose, load }) => {
 
   const handleAddPackage = (stockItemData) => {
     const stockItem = stockItemData.value;
-    setCycles([
-      ...(cycles || []),
+    setCycles((prevCycles) => [
+      ...(prevCycles || []),
       {
         stockId: stockItem.id,
         name: stockItem.package.name,
@@ -176,6 +177,36 @@ const LoadForm = ({ onClose, load }) => {
         clientId: stockItem.clientId,
       },
     ]);
+  };
+
+  const addMultiplePackages = async () => {
+    setIsLoading(true);
+
+    const aviableStock = await getAviableStock();
+
+    if (quantityStock > aviableStock.length || quantityStock <=0) {
+      toast.warn(
+        "Selecciona una cantidad entre 1 y " + aviableStock.length + " paquetes"
+      );
+      setIsLoading(false);
+      return;
+    }
+
+    const addedStock = aviableStock.slice(0, quantityStock);
+
+    const newCycles = addedStock.map((item) => {
+      const { value } = item;
+      return {
+        stockId: value.id,
+        name: value.package.name,
+        content: value.package.content,
+        use: value.uses,
+        clientId: value.clientId,
+      };
+    });
+
+    setCycles((preCycles) => [...(preCycles || []), ...newCycles]);
+    setIsLoading(false);
   };
 
   const handleChangePackage = (e) => {
@@ -1029,6 +1060,7 @@ const LoadForm = ({ onClose, load }) => {
                 <>
                   <div className="formRow">
                     <div className="formItem">
+                      <h5>Profesional</h5>
                       <Select
                         className="selector"
                         onChange={handleChangeClient}
@@ -1036,15 +1068,16 @@ const LoadForm = ({ onClose, load }) => {
                           value: client.id,
                           label: client.businessName,
                         }))}
-                        placeholder="Odontólogo"
+                        placeholder="Selecciona..."
                       />
                     </div>
                     <div className="formItem">
+                      <h5>Paquete</h5>
                       <Select
                         className="selector"
                         onChange={handleChangePackage}
                         options={clientPackages}
-                        placeholder="Paquete"
+                        placeholder="Selecciona..."
                       />
                     </div>
                   </div>
@@ -1055,6 +1088,23 @@ const LoadForm = ({ onClose, load }) => {
                         onChange={handleAddPackage}
                         options={getAviableStock()}
                         placeholder="Inventario"
+                      />
+                    </div>
+                    <div className="formItem">
+                      <input
+                        className="smallInput"
+                        type="number"
+                        min="1"
+                        max={getAviableStock().length}
+                        name="quantityStock"
+                        onChange={(e)=>setQuantityStock(parseInt(e.target.value))}
+                      />
+                    </div>
+                    <div className="formItem">
+                      <BrandedButton
+                        type="add"
+                        label="Agregar paquetes"
+                        onClick={addMultiplePackages}
                       />
                     </div>
                   </div>
