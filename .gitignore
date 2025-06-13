@@ -24,3 +24,4 @@ yarn-error.log*
 **/keys.js
 **.env
 *.log*
+/.firebase*

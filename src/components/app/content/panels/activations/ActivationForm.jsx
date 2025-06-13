@@ -1,13 +1,13 @@
 import { Timestamp } from "firebase/firestore";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import FirebaseDataBase from "../../../../../firebase/FirebaseDatabase";
+import FireStore from "../../../../../firebase/FireStore";
 import BrandedButton from "../../../../utils/brandedButton/BrandedButton";
 import { useUserStore } from "./../../../../../context/userStore";
 import {
-  addTimeToDate,
-  dateToDDMMYYYY,
-  formatDateHour,
+    addTimeToDate,
+    dateToDDMMYYYY,
+    formatDateHour,
 } from "./../../../../../utils/dates-functions";
 import "./ActivationForm.css";
 
@@ -79,7 +79,7 @@ const ActivationForm = ({ inputActivation, onClose }) => {
     };
     const toastId = toast.info("Creando Activación...");
 
-    FirebaseDataBase.save("activations", newActivation)
+    FireStore.save("activations", newActivation)
       .then(() => {
         toast.update(toastId, {
           render: "Activación Creada",

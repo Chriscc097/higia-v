@@ -1,14 +1,14 @@
 import {
-  collection,
-  limit,
-  onSnapshot,
-  orderBy,
-  query,
-  startAfter,
+    collection,
+    limit,
+    onSnapshot,
+    orderBy,
+    query,
+    startAfter,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import FirebaseDataBase, { db } from "../../../../../firebase/FirebaseDatabase";
+import FireStore, { db } from "../../../../../firebase/FireStore";
 import { dateToYYYYMMDD } from "../../../../../utils/dates-functions";
 import BrandedButton from "../../../../utils/brandedButton/BrandedButton";
 import ConfirmPopup from "../../../../utils/ConfirmPopup";
@@ -68,7 +68,7 @@ const Activation = ({ onClose }) => {
       },
     };
 
-    FirebaseDataBase.update("activations", activationItem)
+    FireStore.update("activations", activationItem)
       .then(() => {
         toast.update(toastId, {
           render: "Proceso inactivado",

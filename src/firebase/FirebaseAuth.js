@@ -1,24 +1,18 @@
-import { createUserWithEmailAndPassword, getAuth, GoogleAuthProvider, signInWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
+import { getToken } from "firebase/app-check";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
 import { toast } from "react-toastify";
-import { app } from "./FirebaseConfig";
-import FirebaseDataBase from "./FirebaseDatabase";
-
-const auth = getAuth(app);
-const authGoogle = new GoogleAuthProvider(app);
-
+import { appCheck, auth, authGoogle } from "./FirebaseConfig";
+import FireStore from "./FireStore";
 
 class FirebaseAuth {
     static async signOut() {
-        try {
-            await signOut(auth);
-            console.log("User signed out successfully");
-        } catch (error) {
-            console.error("Error signing out: ", error);
-        }
+        await getToken(appCheck, true);
+        await signOut(auth);
     }
 
     static async signInWithEmailAndPassword(email, password) {
         try {
+            await getToken(appCheck, true);
             await signInWithEmailAndPassword(auth, email, password);
             toast.success("Sesión iniciada");
             return true;
@@ -29,21 +23,23 @@ class FirebaseAuth {
     }
 
     static async createUserWithEmailAndPassword(email, password, username) {
+        await getToken(appCheck, true);
         const userRef = await createUserWithEmailAndPassword(auth, email, password);
         const user = userRef?.user;
         updateProfile(user, {
             displayName: username,
         });
-        await FirebaseDataBase.save("profiles", { id: user.uid, username, email })
+        await FireStore.save("profiles", { id: user.uid, username, email })
         toast.success("Usuario creado");
         return true;
     }
 
     static async signInWithGoogle() {
+        await getToken(appCheck, true);
         const result = await auth.signInWithPopup(authGoogle);
         const user = result.user;
-        const profile = await FirebaseDataBase.get("profiles", user.uid);
-        if (!profile) await FirebaseDataBase.save("profiles", { id: user.uid, username: user.username, email: user.email })
+        const profile = await FireStore.get("profiles", user.uid);
+        if (!profile) await FireStore.save("profiles", { id: user.uid, username: user.username, email: user.email })
         return true;
     }
 }

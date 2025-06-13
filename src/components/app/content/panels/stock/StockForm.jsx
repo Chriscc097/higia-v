@@ -2,7 +2,7 @@ import { collection, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { toast } from "react-toastify"; // Adjust the import according to your firebase configuration
-import FirebaseDataBase, { db } from "../../../../../firebase/FirebaseDatabase";
+import FireStore, { db } from "../../../../../firebase/FireStore";
 import { dateToYYYYMMDD } from "../../../../../utils/dates-functions";
 import BrandedButton from "../../../../utils/brandedButton/BrandedButton";
 import { useUserStore } from "./../../../../../context/userStore";
@@ -103,7 +103,7 @@ const StockForm = ({ onClose }) => {
     let count = stock.package.count;
     const quantity = stock.quantity;
 
-    await FirebaseDataBase.update("packages", {
+    await FireStore.update("packages", {
       count: quantity + count,
       id: stock.package.id,
     });
@@ -124,7 +124,7 @@ const StockForm = ({ onClose }) => {
     }
 
     newStock.forEach((stockItem) => {
-      FirebaseDataBase.save("stock", stockItem);
+      FireStore.save("stock", stockItem);
     });
 
     toast.success("Material guardado correctamente");

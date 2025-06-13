@@ -1,29 +1,29 @@
 import {
-  collection,
-  limit,
-  onSnapshot,
-  orderBy,
-  query,
-  startAfter,
+    collection,
+    limit,
+    onSnapshot,
+    orderBy,
+    query,
+    startAfter,
 } from "firebase/firestore";
 import {
-  CircleArrowOutUpRight,
-  PlusCircle,
-  ShieldCheck
+    CircleArrowOutUpRight,
+    PlusCircle,
+    ShieldCheck
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { db } from "../../../../../firebase/FirebaseDatabase";
+import { db } from "../../../../../firebase/FireStore";
 import {
-  dateToYYYYMMDD,
-  diffDays,
-  getExpColor,
+    dateToYYYYMMDD,
+    diffDays,
+    getExpColor,
 } from "../../../../../utils/dates-functions";
+import LoadingPanel from "../../../../utils/loadingPanel/LoadingPanel";
 import PageIndex from "../../../../utils/pageIndex/PageIndex";
 import Activation from "../activations/Activation";
 import ExitForm from "./exit/ExitForm";
 import LoadForm from "./form/LoadForm";
 import "./Loads.css";
-import LoadingPanel from "../../../../utils/loadingPanel/LoadingPanel";
 
 const Loads = () => {
   const [loads, setLoads] = useState([]); // Estado para los datos cargados

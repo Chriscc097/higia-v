@@ -1,15 +1,15 @@
 import {
-  collection,
-  limit,
-  onSnapshot,
-  orderBy,
-  query,
-  startAfter,
-  where,
+    collection,
+    limit,
+    onSnapshot,
+    orderBy,
+    query,
+    startAfter,
+    where,
 } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
 import useClientStore from "../../../../../context/clientStore";
-import FirebaseDataBase, { db } from "../../../../../firebase/FirebaseDatabase";
+import FireStore, { db } from "../../../../../firebase/FireStore";
 import { dateToYYYYMMDD } from "../../../../../utils/dates-functions";
 import BrandedButton from "../../../../utils/brandedButton/BrandedButton";
 import ConfirmPopup from "../../../../utils/ConfirmPopup";
@@ -175,7 +175,7 @@ const Stock = ({ client }) => {
       stockItem.status = "Disp. Final";
     }
     setConfirmToggleActivation(null);
-    await FirebaseDataBase.update("stock", stockItem);
+    await FireStore.update("stock", stockItem);
     setLoading(false);
   };
 

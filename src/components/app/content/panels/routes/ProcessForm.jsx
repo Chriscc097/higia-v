@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import FirebaseDataBase from "../../../../../firebase/FirebaseDatabase";
+import FireStore from "../../../../../firebase/FireStore";
 import BrandedButton from "../../../../utils/brandedButton/BrandedButton";
 import ToggleButton from "../../../../utils/ToggleButton";
 import "./ProcessForm.css";
@@ -55,7 +55,7 @@ const ProcessForm = ({ process, onClose }) => {
       return;
     }
 
-    await FirebaseDataBase.save("process", formData);
+    await FireStore.save("process", formData);
     onClose();
   };
 

@@ -1,14 +1,13 @@
-import { signOut } from "firebase/auth";
 import { CircleCheck, CircleUserRound, LogOut, Route, Settings, Wrench } from "lucide-react";
 import { usePanelStore } from "../../../context/panelStore";
-import { auth } from "./../../../firebase/FirebaseAuth";
+import FirebaseAuth from "./../../../firebase/FirebaseAuth";
 import "./Menu.css";
 
 const Menu = () => {
   const {  changePanel } = usePanelStore();
 
   const handleLogout = () => {
-    signOut(auth);
+    FirebaseAuth.signOut();
   };
 
   return (

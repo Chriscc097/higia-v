@@ -2,7 +2,7 @@ import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { toast } from "react-toastify";
-import FirebaseDataBase, { db } from "../../../../../firebase/FirebaseDatabase";
+import FireStore, { db } from "../../../../../firebase/FireStore";
 import BrandedButton from "../../../../utils/brandedButton/BrandedButton";
 import LoadingPanel from "../../../../utils/loadingPanel/LoadingPanel";
 import { useUserStore } from "./../../../../../context/userStore";
@@ -59,7 +59,7 @@ const RouteForm = ({ route, onClose }) => {
 
     setLoading(true);
     if (route?.id) {
-      FirebaseDataBase.update("routes", routeData)
+      FireStore.update("routes", routeData)
         .then(() => {
           toast.update(idtoast, {
             render: "Ruta actualizada",
@@ -82,7 +82,7 @@ const RouteForm = ({ route, onClose }) => {
           setLoading(false);
         });
     } else {
-      FirebaseDataBase.save("routes", routeData)
+      FireStore.save("routes", routeData)
         .then(() => {
           toast.update(idtoast, {
             render: "Ruta creada correctamente",

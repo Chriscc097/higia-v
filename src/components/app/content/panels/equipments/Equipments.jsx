@@ -1,18 +1,18 @@
 import {
-  collection,
-  limit,
-  onSnapshot,
-  orderBy,
-  query,
-  startAfter,
+    collection,
+    limit,
+    onSnapshot,
+    orderBy,
+    query,
+    startAfter,
 } from "firebase/firestore";
 import { CirclePlus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { db } from "../../../../../firebase/FirebaseDatabase";
+import { db } from "../../../../../firebase/FireStore";
+import LoadingPanel from "../../../../utils/loadingPanel/LoadingPanel";
 import PageIndex from "../../../../utils/pageIndex/PageIndex";
 import EquipmentForm from "./EquipmentForm";
 import "./Equipments.css";
-import LoadingPanel from "../../../../utils/loadingPanel/LoadingPanel";
 
 const Equipments = () => {
   const [Equipments, setEquipments] = useState([]); // Estado para los datos cargados

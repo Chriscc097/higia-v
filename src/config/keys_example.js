@@ -7,5 +7,6 @@ const firebaseConfig = {
     appId: "<YOUR_APP_ID>",
     measurementId: "<YOUR_MEASUREMENT_ID>"
 };
+const recaptcha ="<YOUR_RECAPTCHA_TOKEN>";
 
-export { firebaseConfig };
+export { firebaseConfig, recaptcha };

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import FirebaseDataBase from "../../../../../firebase/FirebaseDatabase";
+import FireStore from "../../../../../firebase/FireStore";
 import BrandedButton from "../../../../utils/brandedButton/BrandedButton";
 import ToggleButton from "../../../../utils/ToggleButton";
 import Stock from "../stock/Stock";
@@ -42,9 +42,9 @@ const ClientForm = ({ client, onClose }) => {
       return;
     }
     if (formData?.id) {
-      FirebaseDataBase.update("clients", formData);
+      FireStore.update("clients", formData);
     } else {
-      FirebaseDataBase.save("clients", formData);
+      FireStore.save("clients", formData);
     }
     setIsLoading(false);
     onClose();

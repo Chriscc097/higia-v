@@ -10,7 +10,7 @@ import Notification from "./components/utils/Notification";
 import useClientStore from "./context/clientStore";
 import { useUserStore } from "./context/userStore";
 import { auth } from "./firebase/FirebaseAuth";
-import FirebaseDataBase from "./firebase/FirebaseDatabase";
+import FireStore from "./firebase/FireStore";
 
 export default function App() {
   const { currentUser, isLoading, fetchUserInfo } = useUserStore();
@@ -22,22 +22,13 @@ export default function App() {
         return;
       }
 
-      let userProfile = await FirebaseDataBase.get("profiles", user.uid);
+      const userProfile = await FireStore.get("profiles", user.uid);
 
-      if (!userProfile) {
-        userProfile = await FirebaseDataBase.save("profiles", {
-          id: user.uid,
-          email: user.email,
-          username: user.email,
-        });
-      }
-
-      if (!userProfile.profile) {
+      if (!userProfile?.profile) {
         toast.warn("No tienes un perfil asignado, contacta al administrador para poder usar esta aplicación");
         fetchUserInfo(null, false);
         return;
       }
-
       fetchUserInfo(userProfile, false);
       toast.success("Sesión iniciada");
     });

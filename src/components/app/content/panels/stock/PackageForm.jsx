@@ -1,9 +1,8 @@
-import { X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import FirebaseDataBase from "../../../../../firebase/FirebaseDatabase";
-import "./PackageForm.css";
+import FireStore from "../../../../../firebase/FireStore";
 import BrandedButton from "../../../../utils/brandedButton/BrandedButton";
+import "./PackageForm.css";
 
 const PackageForm = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -28,7 +27,7 @@ const PackageForm = ({ onClose }) => {
       toast.warn("Todos los campos son obligatorios");
       return;
     }
-    FirebaseDataBase.save("packages", formData);
+    FireStore.save("packages", formData);
     onClose();
   };
 

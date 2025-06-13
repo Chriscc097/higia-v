@@ -1,36 +1,36 @@
 import {
-  collection,
-  getDocs,
-  query,
-  Timestamp,
-  where,
+    collection,
+    getDocs,
+    query,
+    Timestamp,
+    where,
 } from "firebase/firestore";
 import {
-  CircleArrowOutUpRight,
-  CircleCheckBig,
-  CircleOff,
-  Package2,
-  Package2Icon,
-  Route,
+    CircleArrowOutUpRight,
+    CircleCheckBig,
+    CircleOff,
+    Package2,
+    Package2Icon,
+    Route,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { toast } from "react-toastify";
 import useClientStore from "../../../../../../context/clientStore";
 import { useUserStore } from "../../../../../../context/userStore";
-import FirebaseDataBase, {
-  db,
-} from "../../../../../../firebase/FirebaseDatabase";
+import FireStore, {
+    db,
+} from "../../../../../../firebase/FireStore";
 import FirebaseStorage from "../../../../../../firebase/FirebaseStorage";
 import {
-  addTimeToDate,
-  dateToDDMMYYYY,
-  dateToLongString,
-  dateToYYYYMMDD,
-  diffDays,
-  formatDateHour,
-  getDayOfYear,
-  getExpColor,
+    addTimeToDate,
+    dateToDDMMYYYY,
+    dateToLongString,
+    dateToYYYYMMDD,
+    diffDays,
+    formatDateHour,
+    getDayOfYear,
+    getExpColor,
 } from "../../../../../../utils/dates-functions";
 import { generateBarcodePDF } from "../../../../../../utils/labels";
 import BrandedButton from "../../../../../utils/brandedButton/BrandedButton";
@@ -422,7 +422,7 @@ const LoadForm = ({ onClose, load }) => {
       .padStart(3, "0")}`;
 
     const number =
-      (await FirebaseDataBase.getQuery("loads", "lot", "==", lot)).length + 1;
+      (await FireStore.getQuery("loads", "lot", "==", lot)).length + 1;
 
     const newLoad = {
       ...loadData,
@@ -441,7 +441,7 @@ const LoadForm = ({ onClose, load }) => {
       },
     };
 
-    const existingLoad = await FirebaseDataBase.get("loads", newLoad.id);
+    const existingLoad = await FireStore.get("loads", newLoad.id);
     if (existingLoad) {
       toast.update(toastId, {
         render: "Error al crear la carga: La carga ya existe, intenta de nuevo",
@@ -454,7 +454,7 @@ const LoadForm = ({ onClose, load }) => {
     }
 
     try {
-      await FirebaseDataBase.save("loads", newLoad);
+      await FireStore.save("loads", newLoad);
       toast.update(toastId, {
         render: "Creando Ciclos",
         isLoading: true,
@@ -467,13 +467,13 @@ const LoadForm = ({ onClose, load }) => {
           id: cycle.stockId,
           uses: cycle.use + 1,
         };
-        FirebaseDataBase.update("stock", stockItem);
+        FireStore.update("stock", stockItem);
 
         //Create Cycle
         cycle.number = index + 1;
         cycle.id = `${newLoad.id}P${cycle.number.toString().padStart(2, "0")}`;
         cycle.loadId = newLoad.id;
-        FirebaseDataBase.save("cycles", cycle);
+        FireStore.save("cycles", cycle);
       });
       setLoadData(newLoad);
       toast.update(toastId, {
@@ -522,7 +522,7 @@ const LoadForm = ({ onClose, load }) => {
         const url = await generateBarcodePDF(labels, newData.id);
         newData.labels = url;
         setLoadData(newData);
-        FirebaseDataBase.update("loads", newData);
+        FireStore.update("loads", newData);
 
         toast.update(idToast, {
           render: "Etiquetas creadas",
@@ -681,7 +681,7 @@ const LoadForm = ({ onClose, load }) => {
     };
 
     try {
-      await FirebaseDataBase.update("loads", newLoadData);
+      await FireStore.update("loads", newLoadData);
       toast.update(toastId, {
         render: "Control Agregado",
         type: "success",

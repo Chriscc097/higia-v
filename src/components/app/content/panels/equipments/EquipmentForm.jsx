@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import FirebaseDataBase from "../../../../../firebase/FirebaseDatabase";
+import FireStore from "../../../../../firebase/FireStore";
 import BrandedButton from "../../../../utils/brandedButton/BrandedButton";
 import "./EquipmentForm.css";
 
@@ -35,9 +35,9 @@ const EquipmentForm = ({ equipment, onClose }) => {
       return;
     }
     if (formData.id) {
-      FirebaseDataBase.update("equipments", formData);
+      FireStore.update("equipments", formData);
     } else {
-      FirebaseDataBase.save("equipments", formData);
+      FireStore.save("equipments", formData);
     }
     onClose();
   };

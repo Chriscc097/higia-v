@@ -1,14 +1,14 @@
 import {
-  collection,
-  limit,
-  onSnapshot,
-  orderBy,
-  query,
-  startAfter,
+    collection,
+    limit,
+    onSnapshot,
+    orderBy,
+    query,
+    startAfter,
 } from "firebase/firestore";
 import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
-import { db } from "../../../../../firebase/FirebaseDatabase";
+import { db } from "../../../../../firebase/FireStore";
 import BrandedButton from "../../../../utils/brandedButton/BrandedButton";
 import LoadingPanel from "../../../../utils/loadingPanel/LoadingPanel";
 import PageIndex from "../../../../utils/pageIndex/PageIndex";

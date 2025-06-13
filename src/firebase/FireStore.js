@@ -1,12 +1,8 @@
 
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, initializeFirestore, query, setDoc, updateDoc, where } from "firebase/firestore";
-import { app } from "./FirebaseConfig.js";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { db } from "./FirebaseConfig.js";
 
-const db = initializeFirestore(app, {
-    ignoreUndefinedProperties: true,
-});
-
-class FirebaseDataBase {
+class FireStore {
 
     static async save(collectionName, data) {
         try {
@@ -63,7 +59,7 @@ class FirebaseDataBase {
     }
 
     static async getQuery(collectionName, fieldName, operator, searchValue) {
-        if (!collectionName || !fieldName || !operator || !searchValue) throw new Error("FirebaseDataBase.getQuery: Missing data")
+        if (!collectionName || !fieldName || !operator || !searchValue) throw new Error("FireStore.getQuery: Missing data")
         const queryRef = query(collection(db, collectionName), where(fieldName, operator, searchValue));
         const querySnapshot = await getDocs(queryRef);
         let results = new Set();
@@ -76,5 +72,5 @@ class FirebaseDataBase {
     }
 }
 
-export default FirebaseDataBase;
+export default FireStore;
 export { db };
