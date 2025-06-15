@@ -1,36 +1,34 @@
 import {
-    collection,
-    getDocs,
-    query,
-    Timestamp,
-    where,
+  collection,
+  getDocs,
+  query,
+  Timestamp,
+  where,
 } from "firebase/firestore";
 import {
-    CircleArrowOutUpRight,
-    CircleCheckBig,
-    CircleOff,
-    Package2,
-    Package2Icon,
-    Route,
+  CircleArrowOutUpRight,
+  CircleCheckBig,
+  CircleOff,
+  Package2,
+  Package2Icon,
+  Route,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { toast } from "react-toastify";
 import useClientStore from "../../../../../../context/clientStore";
 import { useUserStore } from "../../../../../../context/userStore";
-import FireStore, {
-    db,
-} from "../../../../../../firebase/FireStore";
+import FireStore, { db } from "../../../../../../firebase/FireStore";
 import FirebaseStorage from "../../../../../../firebase/FirebaseStorage";
 import {
-    addTimeToDate,
-    dateToDDMMYYYY,
-    dateToLongString,
-    dateToYYYYMMDD,
-    diffDays,
-    formatDateHour,
-    getDayOfYear,
-    getExpColor,
+  addTimeToDate,
+  dateToDDMMYYYY,
+  dateToLongString,
+  dateToYYYYMMDD,
+  diffDays,
+  formatDateHour,
+  getDayOfYear,
+  getExpColor,
 } from "../../../../../../utils/dates-functions";
 import { generateBarcodePDF } from "../../../../../../utils/labels";
 import BrandedButton from "../../../../../utils/brandedButton/BrandedButton";
@@ -42,7 +40,7 @@ import "./LoadForm.css";
 const LoadForm = ({ onClose, load }) => {
   // Generalidades
   const [isLoading, setIsLoading] = useState(false);
-  const [quantityStock, setQuantityStock]= useState(1);
+  const [quantityStock, setQuantityStock] = useState(1);
   const { currentUser } = useUserStore();
   const [loadData, setLoadData] = useState({
     ...load,
@@ -184,7 +182,7 @@ const LoadForm = ({ onClose, load }) => {
 
     const aviableStock = await getAviableStock();
 
-    if (quantityStock > aviableStock.length || quantityStock <=0) {
+    if (quantityStock > aviableStock.length || quantityStock <= 0) {
       toast.warn(
         "Selecciona una cantidad entre 1 y " + aviableStock.length + " paquetes"
       );
@@ -586,10 +584,13 @@ const LoadForm = ({ onClose, load }) => {
     return [
       {
         label: "Incubación de Microbiológico",
-        value: "Incubación de una bacteria de fríjol",
+        value: "Incubación de 24 horas de un control microbiológico",
       },
-      { label: "2", value: "2" },
-      { label: "3", value: "3" },
+      {
+        label: "Control Clase V",
+        value: "Control químico de temperatura y presión",
+      },
+      { label: "Test Bowie & Dick", value: "Test de penetración de vapor" },
     ];
   };
 
@@ -814,12 +815,10 @@ const LoadForm = ({ onClose, load }) => {
                 : cycles.length}
             </p>
           </div>
-          {loadData?.id && (
-            <div className="formItem long">
-              <h5>Responsable</h5>
-              <p>{currentUser.username}</p>
-            </div>
-          )}
+          <div className="formItem long">
+            <h5>Responsable</h5>
+            <p>{loadData?.user?.username || currentUser.username}</p>
+          </div>
         </div>
         {loadData?.cancellation && (
           <div className="formRow red">
@@ -881,6 +880,8 @@ const LoadForm = ({ onClose, load }) => {
                     }
                   />
                 </div>
+              </div>
+              <div className="formRow">
                 <div className="formItem">
                   <h5>Descripción</h5>
                   <p>{loadData?.route?.content || "Selecciona una ruta"}</p>
@@ -1097,7 +1098,9 @@ const LoadForm = ({ onClose, load }) => {
                         min="1"
                         max={getAviableStock().length}
                         name="quantityStock"
-                        onChange={(e)=>setQuantityStock(parseInt(e.target.value))}
+                        onChange={(e) =>
+                          setQuantityStock(parseInt(e.target.value))
+                        }
                       />
                     </div>
                     <div className="formItem">

@@ -30,9 +30,6 @@ const RouteForm = ({ route, onClose }) => {
   const handleAddProcess = (e) => {
     const processId = e.value;
     const routeProcess = routeData.process || [];
-    if (routeProcess.length === 0) {
-      routeProcess.push("mArvk9CJCrs94Eu19Tcc");
-    }
     if (routeProcess.some((processItem) => processItem.id === processId)) {
       toast.warn("El proceso ya ha sido agregado");
       return;
@@ -109,9 +106,6 @@ const RouteForm = ({ route, onClose }) => {
     const routeProcess = routeData.process;
     const index = routeProcess.findIndex((pr) => pr.id === processItem);
     routeProcess.splice(index, 1);
-    if (routeProcess.length === 0) {
-      routeProcess.push("mArvk9CJCrs94Eu19Tcc");
-    }
     setRouteData((prevRouteData) => ({
       ...prevRouteData,
       process: routeProcess,
@@ -124,7 +118,12 @@ const RouteForm = ({ route, onClose }) => {
         <div className="formHeader">
           <h3>{route?.id ? "Editar Ruta" : "Crea una Ruta"}</h3>
           <div className="buttonIconSection">
-            <BrandedButton type="add" onClick={() => saveRoute()} isLoading={loading}/>
+            <BrandedButton
+              type="save"
+              onClick={() => saveRoute()}
+              isLoading={loading}
+              label={"Guardar"}
+            />
             <BrandedButton type="close" onClick={() => onClose()} />
           </div>
         </div>
@@ -164,10 +163,10 @@ const RouteForm = ({ route, onClose }) => {
               />
             </div>
             <BrandedButton
-              type="save"
+              type="add"
               isLoading={loading}
               onClick={() => setProcessFormVisible(true)}
-              label="Agregar Control"
+              label="Agregar Proceso"
             />
             <div className="formItem long">
               <h4>Usuario</h4>
@@ -199,7 +198,11 @@ const RouteForm = ({ route, onClose }) => {
                         <tr key={index}>
                           <td>{index + 1}</td>
                           <td>{pr?.name}</td>
-                          <td>{pr?.content}</td>
+                          <td>
+                            {pr?.content.length > 60
+                              ? pr?.content.slice(0, 60) + "..."
+                              : pr?.content}
+                          </td>
                           <td>
                             <span>
                               <BrandedButton

@@ -1,22 +1,19 @@
 import {
-    collection,
-    limit,
-    onSnapshot,
-    orderBy,
-    query,
-    startAfter,
+  collection,
+  orderBy,
+  query
 } from "firebase/firestore";
 import {
-    CircleArrowOutUpRight,
-    PlusCircle,
-    ShieldCheck
+  CircleArrowOutUpRight,
+  PlusCircle,
+  ShieldCheck
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { db } from "../../../../../firebase/FireStore";
 import {
-    dateToYYYYMMDD,
-    diffDays,
-    getExpColor,
+  dateToYYYYMMDD,
+  diffDays,
+  getExpColor,
 } from "../../../../../utils/dates-functions";
 import LoadingPanel from "../../../../utils/loadingPanel/LoadingPanel";
 import PageIndex from "../../../../utils/pageIndex/PageIndex";
@@ -27,39 +24,19 @@ import "./Loads.css";
 
 const Loads = () => {
   const [loads, setLoads] = useState([]); // Estado para los datos cargados
-  const [lastDoc, setLastDoc] = useState(null); // Estado para el último documento cargado
   const [loading, setLoading] = useState(false); // Estado de carga
   // Para evitar más cargas si ya no hay datos
   const [selectedLoad, setSelectedLoad] = useState(null); // Estado para la carga seleccionada
   const [activationsVisible, setActivationsVisible] = useState(false);
   const [exitFormVisible, setExitFormVisible] = useState(false);
 
-  const [pageIndex, setPageIndex] = useState(1);
-  const [pageLength, setPageLength] = useState(30);
-  const [hasMore, setHasMore] = useState(true);
-  useEffect(() => {
-    setLoading(true);
-    const loadCollection = collection(db, "loads");
-    const queryOrder = orderBy("date", "desc");
-    const queryLimit = limit(pageLength);
+  const myQueryBuilder = () => {
+    return query(collection(db, "loads"), orderBy("date", "desc"));
+  };
 
-    const q = lastDoc
-      ? query(loadCollection, queryOrder, startAfter(lastDoc), queryLimit)
-      : query(loadCollection, queryOrder, queryLimit);
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setLoads(data);
-      setHasMore(snapshot.docs.length === pageLength);
-      setLoading(false);
-      // Guarda el último documento para la siguiente página
-      if (snapshot.docs.length > 0) {
-        setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [pageIndex]);
+  const handleDataChange = (data) => {
+    setLoads(data)
+  };
 
   return (
     <div className="loads">
@@ -152,9 +129,9 @@ const Loads = () => {
           {loading && <LoadingPanel />}
         </div>
         <PageIndex
-          currentIndex={pageIndex}
-          onChange={(i) => setPageIndex(i)}
-          hasMore={hasMore}
+          queryBuilder={myQueryBuilder}
+          onDataChange={handleDataChange}
+          pageSize={14}
         />
         {selectedLoad && (
           <LoadForm onClose={() => setSelectedLoad(null)} load={selectedLoad} />

@@ -1,12 +1,5 @@
-import {
-    collection,
-    limit,
-    onSnapshot,
-    orderBy,
-    query,
-    startAfter,
-} from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { collection, orderBy, query } from "firebase/firestore";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import FireStore, { db } from "../../../../../firebase/FireStore";
 import { dateToYYYYMMDD } from "../../../../../utils/dates-functions";
@@ -25,36 +18,15 @@ const Activation = ({ onClose }) => {
   const [activations, setActivations] = useState([]);
   const [confirmUnactivation, setConfirmUnactivation] = useState(null);
 
-  const [pageIndex, setPageIndex] = useState(1);
-  const [pageLength, setPageLength] = useState(20);
-  const [hasMore, setHasMore] = useState(true);
-  const [lastDoc, setLastDoc] = useState(null);
-
   const [isLoadingUnactivation, setIsloadingUnactivation] = useState(false);
 
-  useEffect(() => {
-    setLoading(true);
-    const loadCollection = collection(db, "activations");
-    const queryOrder = orderBy("entry.date", "desc");
-    const queryLimit = limit(pageLength);
+  const myQueryBuilder = () => {
+    return query(collection(db, "activations"), orderBy("entry.date", "desc"));
+  };
 
-    const q = lastDoc
-      ? query(loadCollection, queryOrder, startAfter(lastDoc), queryLimit)
-      : query(loadCollection, queryOrder, queryLimit);
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setActivations(data);
-      setHasMore(snapshot.docs.length === pageLength);
-      setLoading(false);
-      // Guarda el último documento para la siguiente página
-      if (snapshot.docs.length > 0) {
-        setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [pageIndex]);
+  const handleDataChange = (data) => {
+    setActivations(data)
+  };
 
   const unActiveStock = async () => {
     setIsloadingUnactivation(true);
@@ -174,9 +146,9 @@ const Activation = ({ onClose }) => {
             </table>
           </div>
           <PageIndex
-            currentIndex={pageIndex}
-            onChange={(i) => setPageIndex(i)}
-            hasMore={hasMore}
+            queryBuilder={myQueryBuilder}
+            onDataChange={handleDataChange}
+            pageSize={14}
           />
         </div>
         {selectedActivation && (

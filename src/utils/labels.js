@@ -10,57 +10,55 @@ async function generateBarcodePDF(labels, loadId) {
     try {
         const storage = getStorage();
 
-        // Genera todos los códigos de barras en paralelo
         const barcodeImages = await Promise.all(
             labels.map((label) => generateBarcode(label.code))
         );
 
-        // 🔄 Recorre los labels y genera las celdas
-        const tableBody = [];
-        let row = [];
-
-        for (let i = 0; i < labels.length; i++) {
-            const label = labels[i];
-            if (!label.code || !barcodeImages[i]) {
-                console.error("Código de barra no especificado para la etiqueta:", label);
-                continue;
+        // Agrupa los labels en bloques de 32
+        const content = [];
+        for (let blockStart = 0; blockStart < labels.length; blockStart += 32) {
+            const tableBody = [];
+            let row = [];
+            for (let i = blockStart; i < Math.min(blockStart + 32, labels.length); i++) {
+                const label = labels[i];
+                if (!label.code || !barcodeImages[i]) {
+                    console.error("Código de barra no especificado para la etiqueta:", label);
+                    continue;
+                }
+                const cellContent = [
+                    { text: label.client, margin: [0, 0, 0, 0], fontSize: 8, alignment: "center" },
+                    { text: label.package, margin: [0, 0, 0, 0], fontSize: 8, alignment: "center" },
+                    {
+                        image: barcodeImages[i],
+                        alignment: "center",
+                        margin: [0, 5, 0, 5],
+                        fit: [130, 70]
+                    },
+                    { text: label.footer, fontSize: 8, margin: [0, 0, 0, 0], alignment: "center" }
+                ];
+                row.push({ stack: cellContent, margin: [5, 5, 5, 5] });
+                if (row.length === 4) {
+                    tableBody.push(row);
+                    row = [];
+                }
             }
-
-            const cellContent = [
-                { text: label.client, margin: [0, 0, 0, 0], fontSize: 8, alignment: "center" },
-                { text: label.package, margin: [0, 0, 0, 0], fontSize: 8, alignment: "center" },
-                {
-                    image: barcodeImages[i],
-                    alignment: "center",
-                    margin: [0, 5, 0, 5],
-                    fit: [130, 70]
-                },
-                { text: label.footer, fontSize: 8, margin: [0, 0, 0, 0], alignment: "center" }
-            ];
-
-            row.push({ stack: cellContent, margin: [5, 5, 5, 5] });
-
-            if (row.length === 4) {
+            if (row.length > 0) {
+                while (row.length < 4) {
+                    row.push({ text: '' });
+                }
                 tableBody.push(row);
-                row = [];
             }
-
+            content.push({
+                table: {
+                    widths: ["25%", "25%", "25%", "25%"],
+                    body: tableBody
+                }
+            });
+            // Agrega salto de página si no es el último bloque
+            if (blockStart + 32 < labels.length) {
+                content.push({ text: '', pageBreak: 'after' });
+            }
         }
-
-        if (row.length > 0) {
-            while (row.length < 4) {
-                row.push({ text: '' }); // rellena con celdas vacías
-            }
-            tableBody.push(row);
-        }
-
-
-        const content = [{
-            table: {
-                widths: ["25%", "25%", "25%", "25%"],
-                body: tableBody
-            }
-        }];
 
         const docDefinition = {
             content,
@@ -68,7 +66,6 @@ async function generateBarcodePDF(labels, loadId) {
             pageSize: 'LETTER'
         };
 
-        // 📄 Genera el PDF como Blob
         return new Promise((resolve, reject) => {
             pdfMake.createPdf(docDefinition).getBlob(async (blob) => {
                 try {

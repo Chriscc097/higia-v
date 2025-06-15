@@ -12,7 +12,7 @@ const Menu = () => {
 
   return (
     <div className="mainMenu">
-      <div className="header">
+      <div className="headerMenu">
         <h1>Higia V</h1>
       </div>
 
@@ -35,7 +35,7 @@ const Menu = () => {
         </div>
       </div>
 
-      <div className="footer">
+      <div className="footerMenu">
         <div
           className="menuOption config"
           onClick={() => changePanel("config")}

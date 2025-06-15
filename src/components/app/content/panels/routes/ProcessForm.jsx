@@ -79,13 +79,11 @@ const ProcessForm = ({ process, onClose }) => {
               placeholder="Nombre"
               type="text"
               name="name"
-              disabled={formData.name === "Recepción"}
               onChange={handleChange}
               value={formData.name}
             />
             <input
               type="text"
-              disabled={formData.name === "Recepción"}
               name="content"
               placeholder="Descripción"
               onChange={handleChange}
@@ -98,7 +96,6 @@ const ProcessForm = ({ process, onClose }) => {
               return (
                 <ToggleButton
                   key={index}
-                  disabled={formData.name === "Recepción"}
                   label={item.label}
                   value={formData.requirements[item.name]}
                   onToggle={(value) =>
@@ -108,9 +105,7 @@ const ProcessForm = ({ process, onClose }) => {
               );
             })}
           </div>
-          {formData.name !== "Recepción" && (
-            <button type="submit">{formData?.id ? "Guardar" : "Crear"}</button>
-          )}
+          <button type="submit">{formData?.id ? "Guardar" : "Crear"}</button>
         </form>
         <div className="closeButtonColumn">
           <BrandedButton type="close" onClick={() => onClose()} />

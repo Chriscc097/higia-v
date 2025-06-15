@@ -9,55 +9,55 @@
   overflow: hidden;
   border-right: 1px solid var(--color-antiflash-white);
   white-space: nowrap;
+}
 
-  .header {
-    padding: 20px;
-    white-space: nowrap;
+.headerMenu {
+  padding: 20px;
+  white-space: nowrap;
+}
+
+.menuOptions {
+  width: 90%;
+  margin-top: 20px;
+  height: 100%;
+  white-space: nowrap;
+}
+
+.menuOption {
+  border-radius: 5px;
+  align-items: center;
+  padding: 10px;
+  padding-left: 20px;
+  display: flex;
+  cursor: pointer;
+  gap: 12px;
+  white-space: nowrap;
+
+  img {
+    height: 20px;
+    width: 20px;
   }
 
-  .menuOptions {
-    width: 90%;
-    margin-top: 20px;
-    height: 100%;
-    white-space: nowrap;
-  }
-
-  .menuOption {
-    border-radius: 5px;
-    align-items: center;
-    padding: 10px;
-    padding-left: 20px;
-    display: flex;
-    cursor: pointer;
-    gap: 12px;
-    white-space: nowrap;
-
-    img {
-      height: 20px;
-      width: 20px;
+  &:hover {
+    background-color: var(--color-robinegg-blue);
+    p {
+      color: white;
     }
-
+  }
+  &.config {
     &:hover {
-      background-color: var(--color-robinegg-blue);
-      p {
-        color: white;
-      }
-    }
-    &.config {
-      &:hover {
-        background-color: var(--color-slate-grey);
-      }
-    }
-    &.logOut {
-      &:hover {
-        background-color: var(--color-light-red);
-      }
+      background-color: var(--color-slate-grey);
     }
   }
+  &.logOut {
+    &:hover {
+      background-color: var(--color-light-red);
+    }
+  }
+}
 
-  .footer {
-    width: 90%;
-    margin-bottom: 5px;
-    white-space: nowrap;
-  }
+.footerMenu {
+  width: 90%;
+  margin-bottom: 5px;
+  white-space: nowrap;
 }

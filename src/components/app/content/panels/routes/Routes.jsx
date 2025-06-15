@@ -1,82 +1,30 @@
 import {
-    collection,
-    getDocs,
-    limit,
-    query,
-    startAfter,
+  collection,
+  orderBy,
+  query
 } from "firebase/firestore";
 import { CirclePlus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { db } from "../../../../../firebase/FireStore";
 import LoadingPanel from "../../../../utils/loadingPanel/LoadingPanel";
+import PageIndex from "../../../../utils/pageIndex/PageIndex";
 import Process from "./Process";
 import RouteForm from "./RouteForm";
 import "./Routes.css";
 
 const Routes = () => {
   const [routes, setRoutes] = useState([]); // Estado para los datos cargados
-  const [lastDoc, setLastDoc] = useState(null); // Estado para el último documento cargado
   const [loading, setLoading] = useState(false); // Estado de carga
-  const [hasMore, setHasMore] = useState(true); // Para evitar más cargas si ya no hay datos
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [processVisible, setProcessVisible] = useState(false);
 
-  // Función para cargar los datos iniciales
-  const loadInitialData = async () => {
-    setLoading(true);
-    try {
-      const initialQuery = query(collection(db, "routes"), limit(20));
-      const snapshot = await getDocs(initialQuery);
-      const data = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-      setRoutes(data);
-      setLastDoc(snapshot.docs[snapshot.docs.length - 1]); // Guarda el último documento para paginación
-      setHasMore(snapshot.docs.length === 20); // Si hay menos de 20 documentos, no hay más datos
-    } catch (error) {
-      console.error("Error loading data:", error);
-    }
-    setLoading(false);
+  const myQueryBuilder = () => {
+    return query(collection(db, "routes"), orderBy("name", "asc"));
   };
 
-  // Función para cargar más datos (scroll infinito)
-  const loadMoreData = async () => {
-    if (!hasMore || loading) return; // Evita cargar si no hay más datos o ya está cargando
-    setLoading(true);
-    try {
-      const nextQuery = query(
-        collection(db, "routes"),
-        startAfter(lastDoc),
-        limit(10)
-      );
-      const snapshot = await getDocs(nextQuery);
-      const data = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-      setRoutes((prevRoutes) => [...prevRoutes, ...data]);
-      setLastDoc(snapshot.docs[snapshot.docs.length - 1]); // Actualiza el último documento
-      setHasMore(snapshot.docs.length === 10); // Si hay menos de 10 documentos, no hay más datos
-    } catch (error) {
-      console.error("Error loading more data:", error);
-    }
-    setLoading(false);
+  const handleDataChange = (data) => {
+    setRoutes(data)
   };
-
-  // Hook para cargar los datos iniciales
-  useEffect(() => {
-    loadInitialData();
-  }, []);
-
-  // Detectar el scroll al final de la página
-  const handleScroll = () => {
-    if (
-      window.innerHeight + document.documentElement.scrollTop + 100 >=
-      document.documentElement.offsetHeight
-    ) {
-      loadMoreData();
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll); // Limpia el evento al desmontar
-  }, [lastDoc, hasMore, loading]);
 
   return (
     <div className="routes">
@@ -115,15 +63,24 @@ const Routes = () => {
                   <tr key={index} onClick={() => setSelectedRoute(route)}>
                     <td>{index + 1}</td>
                     <td>{route.name}</td>
-                    <td>{route.content}</td>
+                    <td>
+                      {route.content.length > 60
+                        ? route.content.slice(0, 60) + "..."
+                        : route.content}
+                    </td>
                     <td>{route.process.length}</td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
-          {loading && <LoadingPanel/>}
+          {loading && <LoadingPanel />}
         </div>
+        <PageIndex
+           queryBuilder={myQueryBuilder}
+            onDataChange={handleDataChange}
+            pageSize={14}
+          />
       </div>
       {selectedRoute && (
         <RouteForm

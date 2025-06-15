@@ -1,13 +1,10 @@
 import {
-    collection,
-    limit,
-    onSnapshot,
-    orderBy,
-    query,
-    startAfter,
+  collection,
+  orderBy,
+  query
 } from "firebase/firestore";
 import { CirclePlus } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { db } from "../../../../../firebase/FireStore";
 import LoadingPanel from "../../../../utils/loadingPanel/LoadingPanel";
 import PageIndex from "../../../../utils/pageIndex/PageIndex";
@@ -15,39 +12,19 @@ import EquipmentForm from "./EquipmentForm";
 import "./Equipments.css";
 
 const Equipments = () => {
-  const [Equipments, setEquipments] = useState([]); // Estado para los datos cargados
-  const [lastDoc, setLastDoc] = useState(null); // Estado para el último documento cargado
+  const [Equipments, setEquipments] = useState([]); 
   const [Equipment, setEquipment] = useState(null); // Estado para el Equipment seleccionado
-  const [loading, setLoading] = useState(false); // Estado de carga
-  const [lastVisible, setLastVisible] = useState(null);
+  const [loading, setLoading] = useState(false); 
   const centerRef = useRef(null);
 
-  const [pageIndex, setPageIndex] = useState(1);
-  const [pageLength, setPageLength] = useState(20);
-  const [hasMore, setHasMore] = useState(true);
-  useEffect(() => {
-    setLoading(true);
-    const loadCollection = collection(db, "equipments");
-    const queryOrder = orderBy("name", "asc");
-    const queryLimit = limit(pageLength);
 
-    const q = lastDoc
-      ? query(loadCollection, queryOrder, startAfter(lastDoc), queryLimit)
-      : query(loadCollection, queryOrder, queryLimit);
+  const myQueryBuilder = () => {
+    return query(collection(db, "equipments"), orderBy("name", "asc"));
+  };
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setEquipments(data);
-      setHasMore(snapshot.docs.length === pageLength);
-      setLoading(false);
-      // Guarda el último documento para la siguiente página
-      if (snapshot.docs.length > 0) {
-        setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [pageIndex]);
+  const handleDataChange = (data) => {
+    setEquipments(data)
+  };
 
   const handleSelect = async (Equipment) => {
     setEquipment(Equipment);
@@ -112,13 +89,13 @@ const Equipments = () => {
               })}
             </tbody>
           </table>
-          {loading && <LoadingPanel/>}
+          {loading && <LoadingPanel />}
         </div>
-         <PageIndex
-            currentIndex={pageIndex}
-            onChange={(i) => setPageIndex(i)}
-            hasMore={hasMore}
-          />
+        <PageIndex
+          queryBuilder={myQueryBuilder}
+          onDataChange={handleDataChange}
+          pageSize={14}
+        />
       </div>
       {Equipment && (
         <EquipmentForm equipment={Equipment} onClose={handleUnSelect} />

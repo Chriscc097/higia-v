@@ -1,13 +1,10 @@
 import {
-    collection,
-    limit,
-    onSnapshot,
-    orderBy,
-    query,
-    startAfter,
+  collection,
+  orderBy,
+  query
 } from "firebase/firestore";
 import { Check } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { db } from "../../../../../firebase/FireStore";
 import BrandedButton from "../../../../utils/brandedButton/BrandedButton";
 import LoadingPanel from "../../../../utils/loadingPanel/LoadingPanel";
@@ -17,36 +14,16 @@ import ProcessForm from "./ProcessForm";
 
 const Process = ({ onClose }) => {
   const [process, setProcess] = useState([]); // Estado para los datos cargados
-  const [lastDoc, setLastDoc] = useState(null); // Estado para el último documento cargado
   const [loading, setLoading] = useState(false); // Estado de carga
   const [selectedProcess, setSelectedProcess] = useState(null);
 
-  const [pageIndex, setPageIndex] = useState(1);
-  const [pageLength, setPageLength] = useState(10);
-  const [hasMore, setHasMore] = useState(true);
-  useEffect(() => {
-    setLoading(true);
-    const loadCollection = collection(db, "process");
-    const queryOrder = orderBy("name", "asc");
-    const queryLimit = limit(pageLength);
+  const myQueryBuilder = () => {
+    return query(collection(db, "process"), orderBy("name", "asc"));
+  };
 
-    const q = lastDoc
-      ? query(loadCollection, queryOrder, startAfter(lastDoc), queryLimit)
-      : query(loadCollection, queryOrder, queryLimit);
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setProcess(data);
-      setHasMore(snapshot.docs.length === pageLength);
-      setLoading(false);
-      // Guarda el último documento para la siguiente página
-      if (snapshot.docs.length > 0) {
-        setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [pageIndex]);
+  const handleDataChange = (data) => {
+    setProcess(data)
+  };
 
   return (
     <div className="formContainer">
@@ -57,11 +34,12 @@ const Process = ({ onClose }) => {
             <div className="buttons">
               <BrandedButton
                 type="add"
+                label={"Nuevo Proceso"}
                 onClick={() => setSelectedProcess({})}
               />
-            </div>
-            <div className="closeButtonColumn">
-              <BrandedButton type="close" onClick={() => onClose()} />
+              <div className="closeButtonColumn">
+                <BrandedButton type="close" onClick={() => onClose()} />
+              </div>
             </div>
           </div>
         </div>
@@ -73,12 +51,13 @@ const Process = ({ onClose }) => {
                 <tr>
                   <th>#</th>
                   <th>Proceso</th>
+                  <th>Tiempo</th>
                   <th>Temperatura</th>
                   <th>Presión</th>
-                  <th>Tiempo</th>
                   <th>Activaciones</th>
                   <th>Insumos</th>
                   <th>Equipos</th>
+                  <th>Adicionales</th>
                 </tr>
               </thead>
               <tbody>
@@ -90,6 +69,13 @@ const Process = ({ onClose }) => {
                     >
                       <td>{index + 1}</td>
                       <td>{processItem.name}</td>
+                      <td>
+                        {processItem.requirements.min && (
+                          <div className="icon">
+                            <Check size={20} color="white" />
+                          </div>
+                        )}
+                      </td>
                       <td>
                         {processItem.requirements.temp && (
                           <div className="icon">
@@ -104,13 +90,7 @@ const Process = ({ onClose }) => {
                           </div>
                         )}
                       </td>
-                      <td>
-                        {processItem.requirements.min && (
-                          <div className="icon">
-                            <Check size={20} color="white" />
-                          </div>
-                        )}
-                      </td>
+
                       <td>
                         {" "}
                         {processItem.requirements.act && (
@@ -134,6 +114,13 @@ const Process = ({ onClose }) => {
                           </div>
                         )}
                       </td>
+                      <td>
+                        {processItem.requirements.others && (
+                          <div className="icon">
+                            <Check size={20} color="white" />
+                          </div>
+                        )}
+                      </td>
                     </tr>
                   );
                 })}
@@ -142,9 +129,9 @@ const Process = ({ onClose }) => {
             {loading && <LoadingPanel />}
           </div>
           <PageIndex
-            currentIndex={pageIndex}
-            onChange={(i) => setPageIndex(i)}
-            hasMore={hasMore}
+            queryBuilder={myQueryBuilder}
+            onDataChange={handleDataChange}
+            pageSize={14}
           />
         </div>
         {selectedProcess && (

@@ -9,15 +9,14 @@ import { useUserStore } from "./../../../../../context/userStore";
 import PackageForm from "./PackageForm";
 import "./StockForm.css";
 
-const StockForm = ({ onClose }) => {
+const StockForm = ({ onClose, clientId }) => {
   const { currentUser } = useUserStore();
   const [packages, setPackages] = useState([]);
   const [isPackageFormSeen, setPackageFormSeen] = useState(false);
-  const [clients, setClients] = useState([]);
   const [stock, setStock] = useState({
     package: {},
     uses: 0,
-    clientId: "",
+    clientId,
     status: "Consultorio",
     entry: {
       user: {
@@ -39,29 +38,11 @@ const StockForm = ({ onClose }) => {
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "clients"), (snapshot) => {
-      const clientsData = snapshot.docs
-        .map((doc) => doc.data())
-        .filter((client) => client.status === true);
-      setClients(clientsData);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
   const handleSelectedPackage = (e) => {
     const packageData = packages.find((pkg) => pkg.id === e.value);
     setStock((prevStock) => ({
       ...prevStock,
       package: packageData,
-    }));
-  };
-
-  const handleSelectedClient = (e) => {
-    setStock((prevStock) => ({
-      ...prevStock,
-      clientId: e.value,
     }));
   };
 
@@ -137,7 +118,7 @@ const StockForm = ({ onClose }) => {
         <div className="formHeader">
           <h3>Nuevo Material</h3>
           <div className="buttonIconSection">
-            <BrandedButton type="add" onClick={() => saveStock()} />
+            <BrandedButton type="save" onClick={() => saveStock()}  label={"Guardar"}/>
             <BrandedButton type="close" onClick={() => onClose()} />
           </div>
         </div>
@@ -151,24 +132,14 @@ const StockForm = ({ onClose }) => {
                   value: pkg.id,
                   label: pkg.name,
                 }))}
-                placeholder="Material"
+                placeholder="Paquete"
               />
             </div>
             <BrandedButton
-              type="save"
+              type="add"
               onClick={() => setPackageFormSeen(true)}
+              label={"Agregar Paquete"}
             />
-            <div className="formItem">
-              <Select
-                className="selector"
-                onChange={handleSelectedClient}
-                options={clients.map((client) => ({
-                  value: client.id,
-                  label: client.businessName,
-                }))}
-                placeholder="Odontólogo"
-              />
-            </div>
           </div>
           <div className="formRow">
             <div className="formItem">

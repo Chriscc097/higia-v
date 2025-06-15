@@ -4,9 +4,11 @@ import FireStore from "../../../../../firebase/FireStore";
 import BrandedButton from "../../../../utils/brandedButton/BrandedButton";
 import ToggleButton from "../../../../utils/ToggleButton";
 import Stock from "../stock/Stock";
+import StockForm from "../stock/StockForm";
 import "./ClientForm.css";
 
 const ClientForm = ({ client, onClose }) => {
+  const [stockFormvisible, setStockFormVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     businessName: client?.businessName || "",
@@ -56,6 +58,11 @@ const ClientForm = ({ client, onClose }) => {
         <div className="formHeader">
           <h3>Datos del Odontólogo</h3>
           <div className="buttonIconSection">
+            <BrandedButton
+              type="add"
+              onClick={() => setStockFormVisible(true)}
+              label="Nuevo Material"
+            />
             <BrandedButton
               type="save"
               label="Guardar"
@@ -143,6 +150,12 @@ const ClientForm = ({ client, onClose }) => {
 
         <div className="content">{client?.id && <Stock client={client} />}</div>
       </div>
+      {stockFormvisible && (
+        <StockForm
+          onClose={() => setStockFormVisible(false)}
+          clientId={client.id}
+        />
+      )}
     </div>
   );
 };

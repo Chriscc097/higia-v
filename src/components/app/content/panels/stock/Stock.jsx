@@ -1,36 +1,29 @@
 import {
-    collection,
-    limit,
-    onSnapshot,
-    orderBy,
-    query,
-    startAfter,
-    where,
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
 } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
-import useClientStore from "../../../../../context/clientStore";
 import FireStore, { db } from "../../../../../firebase/FireStore";
 import { dateToYYYYMMDD } from "../../../../../utils/dates-functions";
-import BrandedButton from "../../../../utils/brandedButton/BrandedButton";
 import ConfirmPopup from "../../../../utils/ConfirmPopup";
 import LoadingPanel from "../../../../utils/loadingPanel/LoadingPanel";
+import PageIndex from "../../../../utils/pageIndex/PageIndex";
 import { useUserStore } from "./../../../../../context/userStore";
 import "./Stock.css";
-import StockForm from "./StockForm";
 
 const Stock = ({ client }) => {
-  const [stockFormvisible, setStockFormVisible] = useState(false);
   const centerRef = useRef(null);
   const [stock, setStock] = useState(null);
   const [stockList, setStockList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [stockView, setStockView] = useState(false);
-  const [lastVisible, setLastVisible] = useState(null);
   const [packages, setPackages] = useState([]);
   const [stockTablevisible, setStockTableVisible] = useState({});
   const { currentUser } = useUserStore();
   const [confirmToggleActivation, setConfirmToggleActivation] = useState(null);
-  const clients = useClientStore((state) => state.clients);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -43,83 +36,17 @@ const Stock = ({ client }) => {
     return () => unsubscribe();
   }, []);
 
-  /// Function to load initial data
-  const loadStocks = async (initial = false) => {
-    if (loading) return;
-
-    setLoading(true);
-    const stockCollection = collection(db, "stock");
-    const orderStock = orderBy("number", "desc");
-    const limitstock = limit(20);
-    const whereClient = where("clientId", "==", client?.id);
-    let q;
-
-    if (initial) {
-      q = query(stockCollection, orderStock, limitstock, whereClient);
-    } else {
-      q = query(
-        stockCollection,
-        orderStock,
-        startAfter(lastVisible),
-        limitstock,
-        whereClient
-      );
-    }
-    onSnapshot(q, async (querySnapshot) => {
-      if (!querySnapshot.empty) {
-        const newStock = querySnapshot.docs.map((doc) => ({
-          id: doc.id, // Incluye el ID del documento para evitar duplicados
-          ...doc.data(),
-        }));
-
-        await setStockList((prev) => {
-          const mergedStock = [...prev, ...newStock];
-          // Eliminar duplicados basados en el ID
-          const uniqueStocks = mergedStock.filter(
-            (stock, index, self) =>
-              index === self.findIndex((c) => c.id === stock.id)
-          );
-          return initial ? newStock : uniqueStocks;
-        });
-
-        setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
-      }
-      setLoading(false);
-    });
+  const myQueryBuilder = () => {
+    return query(
+      collection(db, "stock"),
+      orderBy("id", "asc"),
+      where("clientId", "==", client?.id)
+    );
   };
 
-  // Hook para cargar los datos iniciales
-  useEffect(() => {
-    loadStocks(true);
-  }, []);
-
-  useEffect(() => {
-    centerRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [stockList]);
-
-  // Manejo del scroll
-  const handleScroll = () => {
-    const container = centerRef.current;
-
-    if (
-      container.scrollTop + container.clientHeight >=
-      container.scrollHeight - 10
-    ) {
-      loadStocks(); // Cargar más contactos al llegar al final
-    }
+  const handleDataChange = (data) => {
+    setStockList(data)
   };
-
-  useEffect(() => {
-    const centerDiv = centerRef.current;
-    if (centerDiv) {
-      centerDiv.addEventListener("scroll", handleScroll);
-    }
-    return () => {
-      if (centerDiv) {
-        centerDiv.removeEventListener("scroll", handleScroll);
-      }
-    };
-  }, [lastVisible]);
 
   const handleSelect = async (stock) => {
     setStock(stock);
@@ -181,17 +108,7 @@ const Stock = ({ client }) => {
 
   return (
     <div className="stock">
-      <div className="header">
-        <h3 className="title">Inventario</h3>
-        <div className="leftHeader">
-          <BrandedButton
-            type="save"
-            onClick={() => setStockFormVisible(true)}
-            label="Nuevo Material"
-          />
-        </div>
-      </div>
-      <div className="content">
+      <div className="stockContent">
         <div className="clientSection" ref={centerRef}>
           <div>
             {packages
@@ -293,9 +210,6 @@ const Stock = ({ client }) => {
           </div>
         </div>
       </div>
-      {stockFormvisible && (
-        <StockForm onClose={() => setStockFormVisible(false)} />
-      )}
       {!!confirmToggleActivation && (
         <ConfirmPopup
           message={
@@ -307,6 +221,11 @@ const Stock = ({ client }) => {
           onCancel={() => setConfirmToggleActivation(null)}
         />
       )}
+      <PageIndex
+        queryBuilder={myQueryBuilder}
+        onDataChange={handleDataChange}
+        pageSize={100}
+      />
     </div>
   );
 };
