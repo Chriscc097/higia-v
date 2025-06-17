@@ -1,4 +1,4 @@
-import { CircleCheck, CircleUserRound, LogOut, Route, Settings, Wrench } from "lucide-react";
+import { CircleCheck, CircleUserRound, House, LogOut, Route, Settings, Wrench } from "lucide-react";
 import { usePanelStore } from "../../../context/panelStore";
 import FirebaseAuth from "./../../../firebase/FirebaseAuth";
 import "./Menu.css";
@@ -17,10 +17,16 @@ const Menu = () => {
       </div>
 
       <div className="menuOptions">
+        <div className="menuOption" onClick={() => changePanel("dashboard")}>
+          <House color="#292F36" size={20}/>
+          <p>Panel de Control</p>
+        </div>
+
         <div className="menuOption" onClick={() => changePanel("loads")}>
           <CircleCheck color="#292F36" size={20}/>
           <p>Cargas</p>
         </div>
+        
         <div className="menuOption" onClick={() => changePanel("routes")}>
           <Route color="#292F36" size={20}/>
           <p>Rutas</p>

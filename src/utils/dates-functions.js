@@ -28,6 +28,12 @@ function format(inputDate) {
   return seconds === 1 ? "Hace " + interval + " segundo" : "Hace " + interval + " segundos";
 }
 
+export function getFirstDayOfMonth(date = new Date()){
+  const first = new Date(date);
+  first.setDate(1);
+  return first;
+}
+
 function formatDate(date) {
   const today = new Date();
   const hourString = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });

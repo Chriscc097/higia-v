@@ -2,6 +2,6 @@
 import { create } from 'zustand';
 
 export const usePanelStore = create((set) => ({
-  currentPanel: 'loads',
+  currentPanel: 'dashboard',
   changePanel: (newPanelName) => set({ currentPanel: newPanelName }),
 }));

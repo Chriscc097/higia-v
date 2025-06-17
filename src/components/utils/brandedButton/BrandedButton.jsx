@@ -4,6 +4,8 @@ import {
   CircleCheck,
   CircleOff,
   CirclePlus,
+  ListFilter,
+  RotateCcw,
   ScanBarcode,
   Trash2,
   Upload,
@@ -22,6 +24,8 @@ const icons = {
   upload: <Upload size={20} color="white" />,
   left: <ChevronLeft size={20} color="white" />,
   right: <ChevronRight size={20} color="white" />,
+  filter: <ListFilter  size={20} color="white" />,
+  update: <RotateCcw  size={20} color="white" />,
 };
 
 const BrandedButton = ({

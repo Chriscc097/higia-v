@@ -31,6 +31,24 @@
     }
   }
 
+  &.update {
+    background-color: #00205b;
+    &:hover {
+      background-color: #006bb0;
+    }
+    &.loading {
+      cursor: not-allowed;
+    }
+  }
+
+  &.filter {
+    background-color: #c9c9c9;
+    padding: 5px;
+    &:hover {
+      background-color: #969696;
+    }
+  }
+
   &.add {
     background-color: var(--color-robinegg-blue);
     &:hover {

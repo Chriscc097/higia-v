@@ -38,11 +38,12 @@
     width: 20px;
   }
 
+  &.selected {
+    background-color: var(--color-robinegg-blue);
+  }
+
   &:hover {
     background-color: var(--color-robinegg-blue);
-    p {
-      color: white;
-    }
   }
   &.config {
     &:hover {

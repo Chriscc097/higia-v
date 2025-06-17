@@ -1,5 +1,6 @@
 import { usePanelStore } from "../../../../context/panelStore";
 import Client from "../panels/clients/Client";
+import Dashboard from "../panels/dashboard/Dashboard";
 import Equipments from "../panels/equipments/Equipments";
 import Loads from "../panels/loads/Loads";
 import Routes from "../panels/routes/Routes";
@@ -15,6 +16,7 @@ const Content = () => {
     {currentPanel === "client" && <Client />}
     {currentPanel === "routes" && <Routes />}
     {currentPanel === "equipments" && <Equipments />}
+    {currentPanel === "dashboard" && <Dashboard />}
   </div>);
 };
 
