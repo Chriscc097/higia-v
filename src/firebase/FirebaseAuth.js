@@ -22,14 +22,14 @@ class FirebaseAuth {
         }
     }
 
-    static async createUserWithEmailAndPassword(email, password, username) {
+    static async createUserWithEmailAndPassword(email, password, displayName) {
         await getToken(appCheck, true);
         const userRef = await createUserWithEmailAndPassword(auth, email, password);
         const user = userRef?.user;
         updateProfile(user, {
-            displayName: username,
+            displayName,
         });
-        await FireStore.save("profiles", { id: user.uid, username, email })
+        await FireStore.save("profiles", { id: user.uid, displayName, email })
         toast.success("Usuario creado");
         return true;
     }

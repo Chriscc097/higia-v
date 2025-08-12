@@ -46,7 +46,7 @@ const LogIn = () => {
 
     try {
       if (isSignInMode) {
-        await FirebaseAuth.createUserWithusernameAndPassword(
+        await FirebaseAuth.createUserWithEmailAndPassword(
           username,
           password,
           displayName
