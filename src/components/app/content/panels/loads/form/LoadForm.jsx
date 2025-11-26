@@ -573,8 +573,10 @@ const LoadForm = ({ onClose, load }) => {
       ...newControl,
       ...info,
     };
+    const startDate = newInfo?.startDate?.toDate() || new Date();
+    const endDate = newInfo?.endDate?.toDate() || new Date();
 
-    if ((newInfo?.startDate || new Date()) < (newInfo?.endDate || new Date())) {
+    if (startDate > endDate) {
       newInfo.endDate = newInfo.startDate;
     }
     setNewControl(newInfo);
